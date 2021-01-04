@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("ModernStartMenu")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+78a3bb1035ccccba10a18ebe47aabd0bc76ce1b2")]
 [assembly: System.Reflection.AssemblyProductAttribute("ModernStartMenu")]
 [assembly: System.Reflection.AssemblyTitleAttribute("ModernStartMenu")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
