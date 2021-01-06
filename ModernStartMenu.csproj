@@ -5,7 +5,15 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <UseWPF>true</UseWPF>
     <Platforms>AnyCPU;x64;x86</Platforms>
+    <ApplicationIcon>logo.ico</ApplicationIcon>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Pictures\**" />
+    <EmbeddedResource Remove="Pictures\**" />
+    <None Remove="Pictures\**" />
+    <Page Remove="Pictures\**" />
+  </ItemGroup>
 
   <ItemGroup>
     <None Remove="Images\logo.png" />

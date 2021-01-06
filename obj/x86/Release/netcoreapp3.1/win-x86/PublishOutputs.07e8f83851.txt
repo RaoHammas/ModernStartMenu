@@ -1,0 +1,2 @@
+E:\MyExtraProjects\ModernStartMenu\ModernStartMenu\bin\Release\netcoreapp3.1\publish86x\ModernStartMenu.pdb
+E:\MyExtraProjects\ModernStartMenu\ModernStartMenu\bin\Release\netcoreapp3.1\publish86x\ModernStartMenu.exe

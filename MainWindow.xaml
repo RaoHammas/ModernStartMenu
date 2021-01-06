@@ -7,7 +7,7 @@
         xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
         xmlns:wpf="clr-namespace:Microsoft.Web.WebView2.Wpf;assembly=Microsoft.Web.WebView2.Wpf"
         mc:Ignorable="d" WindowStyle="None" WindowStartupLocation="CenterScreen"
-        Title="MainWindow" Height="600" Width="1130"
+        Title="MainWindow" Height="600" Width="1130" Visibility="Visible"
         ResizeMode="NoResize" AllowsTransparency="True" ShowInTaskbar="False"
         Activated="MainWindow_OnActivated" Deactivated="MainWindow_OnDeactivated">
     <Window.Background>
@@ -31,6 +31,18 @@
         <ContextMenu x:Key="FavItemsContextMenu" Background="{StaticResource ColorWhite}"
                      BorderThickness="0" BorderBrush="{StaticResource ColorWhite}">
             <MenuItem Header="Remove From favorites" Click="FavItemsContextMenu_Click" />
+        </ContextMenu>
+        <ContextMenu x:Key="PowerItemsContextMenu" Background="{StaticResource ColorWhite}"
+                     Margin="190 135 0 0"
+                     BorderThickness="0" BorderBrush="{StaticResource ColorWhite}">
+            <ContextMenu.Effect>
+                <DropShadowEffect BlurRadius="10" Opacity="0.6" ShadowDepth="0"></DropShadowEffect>
+            </ContextMenu.Effect>
+            <MenuItem Icon="{iconPacks:Ionicons PowerMD}" Header="Shut Down" Click="PowerContextMenu_Clicked" />
+            <MenuItem Icon="{iconPacks:Ionicons RefreshMD}" Header="Restart" Click="PowerContextMenu_Clicked" />
+            <MenuItem Icon="{iconPacks:Ionicons EyeOffiOS}" Header="Log Off" Click="PowerContextMenu_Clicked" />
+            <MenuItem Icon="{iconPacks:Ionicons SnowiOS}" Header="Hibernate" Click="PowerContextMenu_Clicked" />
+            <MenuItem Icon="{iconPacks:Ionicons MoonMD}" Header="Sleep" Click="PowerContextMenu_Clicked" />
         </ContextMenu>
     </Window.Resources>
     <Border Opacity="1" Margin="20">
@@ -76,7 +88,7 @@
                         </Grid.ColumnDefinitions>
                         <Border x:Name="UserImageBorder" Grid.Column="1" Width="35" Height="35" CornerRadius="0"
                                 BorderThickness="0"
-                                Effect="{StaticResource ShadowEffectDefault}" VerticalAlignment="Center"
+                                 VerticalAlignment="Center"
                                 HorizontalAlignment="Center"
                                 xf:Animations.PrimaryBinding="{Binding IsChecked, ElementName=AnimationCheckBox}"
                                 xf:Animations.Primary="{StaticResource FadeInAndGrow}">
@@ -85,8 +97,8 @@
                             </Border.Background>
                         </Border>
 
-                        <Border Grid.Column="2" CornerRadius="{StaticResource BorderCornerValue}"
-                                Effect="{StaticResource ShadowEffectDefault}"
+                        <Border Grid.Column="2" CornerRadius="{StaticResource BorderCornerValue}" MouseLeftButtonUp="BtnPower_Click"
+                                Effect="{StaticResource ShadowEffectDefault}" ContextMenu="{StaticResource PowerItemsContextMenu}"
                                 Background="{StaticResource ColorWhite}" ToolTip="Power Options"
                                 xf:Animations.PrimaryBinding="{Binding IsChecked, ElementName=AnimationCheckBox}"
                                 xf:Animations.Primary="{StaticResource FadeInAndGrow}"
@@ -203,7 +215,8 @@
                                     <ColumnDefinition Width="*" />
                                     <ColumnDefinition Width="Auto" />
                                 </Grid.ColumnDefinitions>
-                                <TextBox BorderThickness="0" FontSize="24" Padding="2 3 0 0" Foreground="Gray"
+                                <TextBox x:Name="BoxSearch" BorderThickness="0" FontSize="24" Padding="2 3 0 0" Foreground="Gray"
+                                         KeyUp="BoxSearch_OnKeyUp"
                                          Margin="10 0 0 0" TextChanged="SearchBoxTextChanged" Opacity="100" />
                                 <iconPacks:PackIconIonicons Kind="SearchiOS" Grid.Column="1" Margin="0 0 10 0"
                                                             Foreground="{StaticResource IconsColor}"
@@ -237,7 +250,7 @@
                                 <DataTemplate>
                                     <Border Background="{StaticResource ColorWhite}" Height="80" Width="100"
                                             MouseLeftButtonUp="MenuItemClicked" Margin="0 0 15 0"
-                                            CornerRadius="{StaticResource BorderCornerValue}"
+                                            CornerRadius="{StaticResource BorderCornerValue}" Cursor="Hand"
                                             ContextMenu="{StaticResource FavItemsContextMenu}"
                                             xf:Animations.SecondaryBinding="{Binding IsChecked, ElementName=AnimationCheckBox}"
                                             xf:Animations.Primary="{xf:Animate BasedOn={StaticResource Shrink}, Event=PointerOver}"
@@ -283,7 +296,7 @@
                                 <DataTemplate>
                                     <Border Background="{StaticResource ColorWhite}" Height="80" Width="110"
                                             ToolTip="{Binding Path}" ContextMenu="{StaticResource AllItemsContextMenu}"
-                                            MouseLeftButtonUp="MenuItemClicked"
+                                            MouseLeftButtonUp="MenuItemClicked" Cursor="Hand"
                                             xf:Animations.SecondaryBinding="{Binding IsChecked, ElementName=AnimationCheckBox}"
                                             xf:Animations.Primary="{xf:Animate BasedOn={StaticResource Shrink}, Event=PointerOver}"
                                             xf:Animations.Secondary="{xf:Animate BasedOn={StaticResource Grow}, Event=PointerExit}"

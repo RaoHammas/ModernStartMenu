@@ -4,16 +4,20 @@ using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text.Json;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using IWshRuntimeLibrary;
+using static System.Windows.Forms.Application;
 using File = System.IO.File;
+using KeyEventArgs = System.Windows.Input.KeyEventArgs;
 using MessageBox = System.Windows.MessageBox;
 using OpenFileDialog = Microsoft.Win32.OpenFileDialog;
 using TextBox = System.Windows.Controls.TextBox;
@@ -21,10 +25,31 @@ using TextBox = System.Windows.Controls.TextBox;
 namespace ModernStartMenu
 {
     /// <summary>
-    /// January 5 2021 12:50 PM Rao Hammas
+    /// January 7 2021 12:05 PM Rao Hammas
     /// </summary>
     public partial class MainWindow
     {
+        [DllImport("user32")]
+        public static extern bool ExitWindowsEx(uint uFlags, uint dwReason);
+
+        [DllImport("user32")]
+        private static extern bool RegisterHotKey(IntPtr hWnd, int id, uint fsModifiers, uint vk);
+
+        [DllImport("user32")]
+        private static extern bool UnregisterHotKey(IntPtr hWnd, int id);
+
+        private const int HOTKEY_ID = 9000;
+
+        //Modifiers:
+        private const uint MOD_NONE = 0x0000; //(none)
+        private const uint MOD_ALT = 0x0001; //ALT
+        /*private const uint MOD_CONTROL = 0x0002; //CTRL
+        private const uint MOD_SHIFT = 0x0004; //SHIFT
+        private const uint MOD_WIN = 0x0008; //WINDOWS
+        private const uint VK_CAPITAL = 0x14; //capsLock
+        private const uint VK_ALT = 0x14; //Alt Key*/
+        private const uint VK_SPACE = 0x20; //Alt Key
+
         public MainWindow()
         {
             InitializeComponent();
@@ -38,6 +63,58 @@ namespace ModernStartMenu
         public ObservableCollection<MenuItem> MenuItemsCollection { get; set; }
         public ObservableCollection<MenuItem> FavItemsCollection { get; set; }
 
+        private IntPtr _windowHandle;
+        private HwndSource _source;
+        protected override void OnSourceInitialized(EventArgs e)
+        {
+            base.OnSourceInitialized(e);
+
+            _windowHandle = new WindowInteropHelper(this).Handle;
+            _source = HwndSource.FromHwnd(_windowHandle);
+            _source.AddHook(HwndHook);
+
+            RegisterHotKey(_windowHandle, HOTKEY_ID, MOD_ALT, VK_SPACE); //CTRL + CAPS_LOCK
+        }
+        private IntPtr HwndHook(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
+        {
+            const int WM_HOTKEY = 0x0312;
+            switch (msg)
+            {
+                case WM_HOTKEY:
+                    switch (wParam.ToInt32())
+                    {
+                        case HOTKEY_ID:
+                            int vkey = (((int) lParam >> 16) & 0xFFFF);
+                            if (vkey == VK_SPACE)
+                            {
+                                if (this.Visibility == Visibility.Hidden)
+                                {
+                                    this.Visibility = Visibility.Visible;
+                                    this.Focus();
+                                    this.Activate();
+                                    this.WindowStartupLocation = WindowStartupLocation.CenterScreen;
+                                }
+                                else
+                                {
+                                    this.Visibility = Visibility.Hidden;
+                                }
+                            }
+
+                            handled = true;
+                            break;
+                    }
+
+                    break;
+            }
+
+            return IntPtr.Zero;
+        }
+        protected override void OnClosed(EventArgs e)
+        {
+            _source.RemoveHook(HwndHook);
+            UnregisterHotKey(_windowHandle, HOTKEY_ID);
+            base.OnClosed(e);
+        }
         //===========================
 
         private async void InitializeAsync()
@@ -53,8 +130,8 @@ namespace ModernStartMenu
             {
                 CheckBoxGoogleSearch.IsChecked = false;
                 CheckBoxGoogleSearch.IsEnabled = false;
-                CheckBoxGoogleSearch.ToolTip =
-                    "Google search not available because you need to install WebWiew2 runtime. Please Install this runtime and check again.";
+                CheckBoxGoogleSearch.ToolTip = "Google search not available because you need to install WebWiew2 runtime. Please Install this runtime and check again.";
+                MessageBox.Show("Google search not available because you need to install 'WebWiew2 runtime'.\nPlease Install this runtime and check again.\n Press Alt+Space to activate Modern Start Menu.");
             }
         }
 
@@ -63,11 +140,13 @@ namespace ModernStartMenu
         {
             AnimationCheckBox.IsChecked = true;
             TextTime.Text = DateTime.Now.ToString("D");
+            BoxSearch.Focus();
         }
 
         private void MainWindow_OnDeactivated(object sender, EventArgs e)
         {
             AnimationCheckBox.IsChecked = false;
+            Visibility = Visibility.Hidden;
         }
 
         private void BtnAddNewMenuItemClicked(object sender, MouseButtonEventArgs e)
@@ -165,7 +244,7 @@ namespace ModernStartMenu
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.ToString());
+                //MessageBox.Show(ex.ToString());
             }
         }
 
@@ -390,7 +469,10 @@ namespace ModernStartMenu
 
         private void OpenWinSettings_Click(object sender, MouseButtonEventArgs e)
         {
-            Process.Start("ms-settings:Display");
+            Process process = new Process();
+            process.StartInfo.FileName = "ms-settings:Home-Page";
+            process.StartInfo.UseShellExecute = true;
+            process.Start();
         }
 
         private void OpenMyPc_Click(object sender, MouseButtonEventArgs e)
@@ -403,9 +485,14 @@ namespace ModernStartMenu
             Process.Start("cmd");
         }
 
-        private void OpeMyGithub_Click(object sender, MouseButtonEventArgs e)
+        private async void OpeMyGithub_Click(object sender, MouseButtonEventArgs e)
         {
-            StartBrowsing("https://github.com/RaoHammas");
+            if (CheckBoxGoogleSearch.IsChecked == true)
+            {
+                BoxSearch.SelectedText = "https://github.com/RaoHammas";
+                await Task.Delay(2000);
+                StartBrowsing("https://github.com/RaoHammas");
+            }
         }
 
         private void CheckBoxGoogleSearch_OnChecked(object sender, RoutedEventArgs e)
@@ -425,6 +512,87 @@ namespace ModernStartMenu
         private void Close_Click(object sender, MouseButtonEventArgs e)
         {
             Close();
+        }
+
+        private void BtnPower_Click(object sender, MouseButtonEventArgs e)
+        {
+            try
+            {
+                var senderBorder = sender as Border;
+                if (senderBorder != null)
+                {
+                    senderBorder.ContextMenu.IsOpen = true;
+                }
+            }
+            catch (Exception exception)
+            {
+                MessageBox.Show(exception.ToString());
+            }
+        }
+
+        private void PowerContextMenu_Clicked(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var senderMenu = (sender as System.Windows.Controls.MenuItem)?.Header.ToString();
+
+                var psi = new ProcessStartInfo();
+
+                switch (senderMenu)
+                {
+                    case "Shut Down":
+                        psi = new ProcessStartInfo("shutdown", "/s /t 0");
+                        psi.CreateNoWindow = false;
+                        psi.UseShellExecute = false;
+                        Process.Start(psi);
+                        break;
+                    case "Restart":
+                        psi = new ProcessStartInfo("shutdown", "/r /t 0");
+                        psi.CreateNoWindow = false;
+                        psi.UseShellExecute = false;
+                        Process.Start(psi);
+                        break;
+                    case "Log Off":
+                        ExitWindowsEx(0, 0);
+                        break;
+                    case "Sleep":
+                        SetSuspendState(PowerState.Suspend, false, false);
+                        break;
+                    case "Hibernate":
+                        SetSuspendState(PowerState.Hibernate, false, false);
+                        break;
+                    default:
+                        return;
+                        break;
+                }
+            }
+            catch (Exception exception)
+            {
+                MessageBox.Show(exception.ToString());
+            }
+        }
+
+        private void BoxSearch_OnKeyUp(object sender, KeyEventArgs e)
+        {
+            try
+            {
+                if (e.Key == Key.Enter || e.Key == Key.Return)
+                {
+                    // just execute first app if enter pressed while search box active
+                    var clickedItem = MenuItemsControl.Items[0] as MenuItem;
+                    Process process = new Process();
+                    if (clickedItem != null)
+                    {
+                        process.StartInfo.FileName = clickedItem.Path;
+                        process.StartInfo.UseShellExecute = true;
+                        process.Start();
+                    }
+                }
+            }
+            catch (Exception exception)
+            {
+                MessageBox.Show(exception.ToString());
+            }
         }
     } // end of class
 }
