@@ -8,7 +8,7 @@ You are welcome to make any kind of improvement or feature addition. <3
 -All installed apps are automatically added in start menu.  
 -You can add manually an application by choosing it.  
 -You can add apps in favorites.  
--Google search anything with the poer of WebView2 (Edge Chromium)  
+-Google search anything with the power of WebView2 (Edge Chromium)  
 -Super fast  
 
 **Currently work is being done on this app so it's not 100% completed.**  
