@@ -9,13 +9,13 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Forms;
+//using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using IWshRuntimeLibrary;
-using static System.Windows.Forms.Application;
+//using static System.Windows.Forms.Application;
 using File = System.IO.File;
 using KeyEventArgs = System.Windows.Input.KeyEventArgs;
 using MessageBox = System.Windows.MessageBox;
@@ -556,10 +556,10 @@ namespace ModernStartMenu
                         ExitWindowsEx(0, 0);
                         break;
                     case "Sleep":
-                        SetSuspendState(PowerState.Suspend, false, false);
+                        //SetSuspendState(PowerState.Suspend, false, false);
                         break;
                     case "Hibernate":
-                        SetSuspendState(PowerState.Hibernate, false, false);
+                        //SetSuspendState(PowerState.Hibernate, false, false);
                         break;
                     default:
                         return;
