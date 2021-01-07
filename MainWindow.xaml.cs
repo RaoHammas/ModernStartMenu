@@ -42,7 +42,9 @@ namespace ModernStartMenu
 
         //Modifiers:
         private const uint MOD_NONE = 0x0000; //(none)
+
         private const uint MOD_ALT = 0x0001; //ALT
+
         /*private const uint MOD_CONTROL = 0x0002; //CTRL
         private const uint MOD_SHIFT = 0x0004; //SHIFT
         private const uint MOD_WIN = 0x0008; //WINDOWS
@@ -65,6 +67,7 @@ namespace ModernStartMenu
 
         private IntPtr _windowHandle;
         private HwndSource _source;
+
         protected override void OnSourceInitialized(EventArgs e)
         {
             base.OnSourceInitialized(e);
@@ -75,6 +78,7 @@ namespace ModernStartMenu
 
             RegisterHotKey(_windowHandle, HOTKEY_ID, MOD_ALT, VK_SPACE); //CTRL + CAPS_LOCK
         }
+
         private IntPtr HwndHook(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
         {
             const int WM_HOTKEY = 0x0312;
@@ -109,6 +113,7 @@ namespace ModernStartMenu
 
             return IntPtr.Zero;
         }
+
         protected override void OnClosed(EventArgs e)
         {
             _source.RemoveHook(HwndHook);
@@ -130,8 +135,10 @@ namespace ModernStartMenu
             {
                 CheckBoxGoogleSearch.IsChecked = false;
                 CheckBoxGoogleSearch.IsEnabled = false;
-                CheckBoxGoogleSearch.ToolTip = "Google search not available because you need to install WebWiew2 runtime. Please Install this runtime and check again.";
-                MessageBox.Show("Google search not available because you need to install 'WebWiew2 runtime'.\nPlease Install this runtime and check again.\n Press Alt+Space to activate Modern Start Menu.");
+                CheckBoxGoogleSearch.ToolTip =
+                    "Google search not available because you need to install WebWiew2 runtime. Please Install this runtime and check again.";
+                MessageBox.Show(
+                    "Google search not available because you need to install 'WebWiew2 runtime'.\nPlease Install this runtime and check again.\n Press Alt+Space to activate Modern Start Menu.");
             }
         }
 
