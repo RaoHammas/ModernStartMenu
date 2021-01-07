@@ -1,24 +1,29 @@
-# ModernStartMenu
-**Modern StartMenu** for Windows  7 and 10 created with `WPF .Net Core v3.1`.  
+#  ModernStartMenu v1.0
+This is version `v1.0` The very first release of 100% working super fast Modern Start Menu. To use this, you just need to start the `exe` by double clicking it and then any time from anywhere press `Alt+Space` and boom start menu will appear on top of everything <3  
 
-**Please try it and let me know if you face any issue or bug.**  
- 
-You are welcome to make any kind of improvement or feature addition. <3  
-**-Features**  
--All installed apps are automatically added in start menu.  
--You can add manually an application by choosing it.  
--You can add apps in favorites.  
--Google search anything with the power of WebView2 (Edge Chromium)  
--Super fast  
+#### Download v.1.0  [ModernStartMenu](https://github.com/RaoHammas/ModernStartMenu/releases/tag/v1.0)
 
-**Currently work is being done on this app so it's not 100% completed.**  
+## Features  
 
-In order to use the Browser feature of this app you need to have **WebView2** runtime installed in your system.  
-Get it from here https://developer.microsoft.com/en-us/microsoft-edge/webview2/#download-section  
-**---IMAGES---**  
+*  `Alt+Space` to activate from anywhere and anytime  
+*  Will automatically add all your installed apps  
+* You can add any app or file manually  
+* You can choose some apps as favorite to show at top  
+* built-In Google search support. Just start typing and google search will be activated  
+* With the power of `WebView2`  everything is possible inside this app just like a full browser  
+* Computer power options like Shutdown, Restart, Log Off, Sleep and Hibernate  
+* Windows useful apps at the top like Settings, Command Prompt and Explorer  
+* Fast and beautiful user Interface <3  
+
+>In order to use the Browser feature of this app you need to have WebView2 runtime installed in your system.
+>Get it from here [WebView 2 Runtime!](https://developer.microsoft.com/en-us/microsoft-edge/webview2/#download-section)
+
+*Please report any issue you face regarding this app or if you want to make this app more powerful, featureful and efficient, Fork it and create pull request.*
+
+#### Made with  ❤  
 
 
-![Gif](https://raw.githubusercontent.com/RaoHammas/ModernStartMenu/main/Pictures/Demo.gif)  
-![Sc](https://github.com/RaoHammas/ModernStartMenu/blob/main/Pictures/Screenshot%202021-01-05%20015132.jpg?raw=true)  
-![Sc](https://github.com/RaoHammas/ModernStartMenu/blob/main/Pictures/Screenshot%202021-01-05%20015238.jpg?raw=true)
-![Sc](https://github.com/RaoHammas/ModernStartMenu/blob/main/Pictures/Screenshot%202021-01-05%20015332.jpg?raw=true)
+![Demo](https://user-images.githubusercontent.com/16499626/103917490-7b5df500-512f-11eb-9171-c614e2842251.gif)
+![Screenshot 2021-01-05 015132](https://user-images.githubusercontent.com/16499626/103917563-90d31f00-512f-11eb-931a-d9055cc49bcd.jpg)
+![Screenshot 2021-01-06 223006](https://user-images.githubusercontent.com/16499626/103917590-97619680-512f-11eb-8118-10ef9503b09b.jpg)
+
