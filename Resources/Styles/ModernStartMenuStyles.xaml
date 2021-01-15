@@ -1,0 +1,40 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <SolidColorBrush x:Key="ColorGridTop" Color="#E7E0E0" />
+    <SolidColorBrush x:Key="ColorGridBottom" Color="#F7F7F7" />
+    <SolidColorBrush x:Key="ColorWhite" Color="#FFFFFF" />
+    <SolidColorBrush x:Key="TextColor" Color="#474747" />
+    <DropShadowEffect x:Key="ShadowEffectDefault" Color="Black" BlurRadius="20" Opacity="0.1" ShadowDepth="10"
+                      Direction="-43" />
+    <DropShadowEffect x:Key="ToolTipShadowEffectDefault" Color="Black" BlurRadius="10" Opacity="0.1" ShadowDepth="10"
+                      Direction="-43" />
+    <BlurEffect x:Key="BlurEffectDefault" Radius="10" KernelType="Gaussian" RenderingBias="Performance" />
+    <DropShadowEffect x:Key="ShadowEffectDefaultAllItems" Color="Black" BlurRadius="5" Opacity="0.2"
+                      ShadowDepth="0" />
+    <CornerRadius x:Key="BorderCornerValue">5</CornerRadius>
+
+
+    <Style TargetType="ToolTip">
+
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ToolTip">
+                    <Border>
+                        <Border Name="Border" Margin="15"
+                                CornerRadius="{StaticResource BorderCornerValue}"
+                                Width="{TemplateBinding Width}" Background="{StaticResource ColorWhite}"
+                                Height="{TemplateBinding Height}" Padding="0"
+                                Effect="{StaticResource ToolTipShadowEffectDefault}">
+                            <ContentPresenter Margin="4"
+                                              HorizontalAlignment="Left"
+                                              VerticalAlignment="Top" />
+                        </Border>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+
+
+</ResourceDictionary>
