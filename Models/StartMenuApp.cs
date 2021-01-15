@@ -10,5 +10,6 @@ namespace ModernStartMenu_MVVM.Models
         public bool IsFav { get; set; }
         public string Path { get; set; }
         public DateTime UpdatedDate { get; set; }
+        public int TransitionDelay { get; set; }
     }
 }

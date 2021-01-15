@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:xamlFlair="clr-namespace:XamlFlair;assembly=XamlFlair.WPF"
         xmlns:viewModels="clr-namespace:ModernStartMenu_MVVM.ViewModels"
-        xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
+        xmlns:b="http://schemas.microsoft.com/xaml/behaviors" 
         mc:Ignorable="d" WindowStartupLocation="CenterScreen" ShowInTaskbar="True"
         AllowsTransparency="True" WindowStyle="None" Background="Transparent" ResizeMode="NoResize"
         Title="ShellView" Width="1124" Height="620">
@@ -49,8 +49,8 @@
                             <Border Background="{StaticResource ColorWhite}"
                                     ToolTip="Open windows power options dialog"
                                     CornerRadius="{StaticResource BorderCornerValue}" Height="30"
-                                    xamlFlair:Animations.Primary="{xamlFlair:Animate BasedOn={StaticResource FadeInAndSlideFromLeft}, Delay=600,Duration=800,Event=None}" 
-                                    xamlFlair:Animations.Secondary="{xamlFlair:Animate BasedOn={StaticResource FadeOutAndSlideToLeft}, Delay=600,Duration=800,Event=None}"
+                                    xamlFlair:Animations.Primary="{xamlFlair:Animate BasedOn={StaticResource FadeInAndSlideFromLeft}, Delay=900,Duration=800,Event=None}" 
+                                    xamlFlair:Animations.Secondary="{xamlFlair:Animate BasedOn={StaticResource FadeOutAndSlideToLeft}, Delay=900,Duration=800,Event=None}"
                                     xamlFlair:Animations.CombinedBinding="{Binding IsShellActivated,UpdateSourceTrigger=PropertyChanged}"
                                     Effect="{StaticResource ShadowEffectDefault}">
                                 <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Margin="5"
@@ -67,8 +67,8 @@
                                     ToolTip="Check this to enable google search"
                                     CornerRadius="{StaticResource BorderCornerValue}" Height="30"
 
-                                    xamlFlair:Animations.Primary="{xamlFlair:Animate BasedOn={StaticResource FadeInAndSlideFromLeft}, Delay=500,Duration=800,Event=None}" 
-                                    xamlFlair:Animations.Secondary="{xamlFlair:Animate BasedOn={StaticResource FadeOutAndSlideToLeft}, Delay=500,Duration=800,Event=None}"
+                                    xamlFlair:Animations.Primary="{xamlFlair:Animate BasedOn={StaticResource FadeInAndSlideFromLeft}, Delay=700,Duration=600,Event=None}" 
+                                    xamlFlair:Animations.Secondary="{xamlFlair:Animate BasedOn={StaticResource FadeOutAndSlideToLeft}, Delay=700,Duration=600,Event=None}"
                                     xamlFlair:Animations.CombinedBinding="{Binding IsShellActivated,UpdateSourceTrigger=PropertyChanged}"
 
                                     Effect="{StaticResource ShadowEffectDefault}">
@@ -84,8 +84,8 @@
                                     ToolTip="Add an app to start menu"
                                     CornerRadius="{StaticResource BorderCornerValue}" Height="30" Width="35"
 
-                                    xamlFlair:Animations.Primary="{xamlFlair:Animate BasedOn={StaticResource FadeInAndSlideFromLeft}, Delay=400,Duration=800,Event=None}" 
-                                    xamlFlair:Animations.Secondary="{xamlFlair:Animate BasedOn={StaticResource FadeOutAndSlideToLeft}, Delay=400,Duration=800,Event=None}"
+                                    xamlFlair:Animations.Primary="{xamlFlair:Animate BasedOn={StaticResource FadeInAndSlideFromLeft}, Delay=500,Duration=400,Event=None}" 
+                                    xamlFlair:Animations.Secondary="{xamlFlair:Animate BasedOn={StaticResource FadeOutAndSlideToLeft}, Delay=500,Duration=400,Event=None}"
                                     xamlFlair:Animations.CombinedBinding="{Binding IsShellActivated,UpdateSourceTrigger=PropertyChanged}"
 
                                     Effect="{StaticResource ShadowEffectDefault}">
@@ -146,43 +146,55 @@
                     </ItemsControl.ItemsPanel>
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
-                            <Border Background="{StaticResource ColorWhite}" Height="70" Width="90" CornerRadius="{StaticResource BorderCornerValue}"
-                                    xamlFlair:Animations.Primary="{xamlFlair:Animate BasedOn={StaticResource Shrink}, Event=PointerOver,Duration=500}" 
-                                    xamlFlair:Animations.Secondary="{xamlFlair:Animate BasedOn={StaticResource Grow}, Event=PointerExit,Duration=500}" 
-
-                                    ToolTip="{Binding Path}"
-                                    Margin="0 0 10 0" Cursor="Hand">
-                                <Grid Margin="0 0 0 10">
-                                    <Grid.RowDefinitions>
-                                        <RowDefinition Height="*" />
-                                        <RowDefinition Height="Auto" />
-                                    </Grid.RowDefinitions>
-                                    <Image Grid.Row="0" Source="{Binding AppIcon}"
-                                                   HorizontalAlignment="Center" VerticalAlignment="Center" Height="30"
-                                                   Width="30" />
-                                    <TextBlock Grid.Row="1" Text="{Binding AppName}" HorizontalAlignment="Center"
-                                                       VerticalAlignment="Center"
-                                                       Margin="10 0 10 0" FontSize="8" TextAlignment="Center"
-                                                       TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" />
-                                </Grid>
-                            </Border>
+                            <Grid
+                                xamlFlair:Animations.CombinedBinding="{Binding ElementName=SectionProfile,Path=DataContext.IsShellActivated,UpdateSourceTrigger=PropertyChanged}"
+                                xamlFlair:Animations.Primary="{xamlFlair:Animate BasedOn={StaticResource FadeInAndSlideFromLeft}, Delay={Binding TransitionDelay},Duration=800,Event=None}" 
+                                xamlFlair:Animations.Secondary="{xamlFlair:Animate BasedOn={StaticResource FadeOutAndSlideToLeft},Event=None}">
+                                <Border Background="{StaticResource ColorWhite}" Height="70" Width="90"
+                                        CornerRadius="{StaticResource BorderCornerValue}"
+                                        xamlFlair:Animations.Primary="{xamlFlair:Animate BasedOn={StaticResource Shrink}, Event=PointerOver,Duration=300}"
+                                        xamlFlair:Animations.Secondary="{xamlFlair:Animate BasedOn={StaticResource Grow}, Event=PointerExit,Duration=300}"
+                                        ToolTip="{Binding Path}"
+                                        Margin="0 0 10 0" Cursor="Hand">
+                                    <Grid Margin="0 0 0 10">
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="*" />
+                                            <RowDefinition Height="Auto" />
+                                        </Grid.RowDefinitions>
+                                        <Image Grid.Row="0" Source="{Binding AppIcon}"
+                                               HorizontalAlignment="Center" VerticalAlignment="Center" Height="30"
+                                               Width="30" />
+                                        <TextBlock Grid.Row="1" Text="{Binding AppName}" HorizontalAlignment="Center"
+                                                   VerticalAlignment="Center"
+                                                   Margin="10 0 10 0" FontSize="8" TextAlignment="Center"
+                                                   TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" />
+                                    </Grid>
+                                </Border>
+                            </Grid>
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
 
-                <Border x:Name="BorderBtnAddNewFavApp" Background="{StaticResource ColorWhite}" Cursor="Hand" Height="70" Width="90" CornerRadius="{StaticResource BorderCornerValue}"
-                        xamlFlair:Animations.CombinedBinding="{Binding IsShellActivated,UpdateSourceTrigger=PropertyChanged}"
-                        xamlFlair:Animations.Primary="{xamlFlair:Animate BasedOn={StaticResource Shrink}, Event=PointerOver,Duration=500}" 
-                        xamlFlair:Animations.Secondary="{xamlFlair:Animate BasedOn={StaticResource Grow}, Event=PointerExit,Duration=500}" >
-                    <b:Interaction.Triggers>
-                        <b:EventTrigger EventName="MouseLeftButtonUp">
-                            <b:InvokeCommandAction Command="{Binding AddNewFavAppCommand}" />
-                        </b:EventTrigger>
-                    </b:Interaction.Triggers>
-                    <TextBlock VerticalAlignment="Center" FontSize="24" HorizontalAlignment="Center"
-                               Text="&#xE710;" FontFamily="Segoe MDL2 Assets"
-                               Foreground="{StaticResource TextColor}" />
-                </Border>
+                <Grid
+                    xamlFlair:Animations.CombinedBinding="{Binding IsShellActivated,UpdateSourceTrigger=PropertyChanged}"
+                    xamlFlair:Animations.Primary="{xamlFlair:Animate BasedOn={StaticResource FadeInAndSlideFromLeft}, Delay=400,Duration=800,Event=None}" 
+                    xamlFlair:Animations.Secondary="{xamlFlair:Animate BasedOn={StaticResource FadeOutAndSlideToLeft}, Delay=400,Duration=800,Event=None}">
+                    <Border x:Name="BorderBtnAddNewFavApp" Background="{StaticResource ColorWhite}" Cursor="Hand"
+                            Height="70" Width="90" CornerRadius="{StaticResource BorderCornerValue}"
+                            xamlFlair:Animations.Primary="{xamlFlair:Animate BasedOn={StaticResource Shrink}, Event=PointerOver,Duration=300}"
+                            xamlFlair:Animations.Secondary="{xamlFlair:Animate BasedOn={StaticResource Grow}, Event=PointerExit,Duration=300}"
+                            >
+
+                        <b:Interaction.Triggers>
+                            <b:EventTrigger EventName="MouseLeftButtonUp">
+                                <b:InvokeCommandAction Command="{Binding AddNewFavAppCommand}" />
+                            </b:EventTrigger>
+                        </b:Interaction.Triggers>
+                        <TextBlock VerticalAlignment="Center" FontSize="24" HorizontalAlignment="Center"
+                                   Text="&#xE710;" FontFamily="Segoe MDL2 Assets"
+                                   Foreground="{StaticResource TextColor}" />
+                    </Border>
+                </Grid>
             </StackPanel>
         </Grid>
     </Border>

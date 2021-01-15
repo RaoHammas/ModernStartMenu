@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.ObjectModel;
+using System.Linq;
 using Microsoft.Toolkit.Mvvm.Input;
 using Microsoft.Toolkit.Mvvm.Messaging;
 using ModernStartMenu_MVVM.Helpers;
@@ -85,9 +86,17 @@ namespace ModernStartMenu_MVVM.ViewModels
                         AppName = "Some App",
                         IsFav = true,
                         Path = filePath,
-                        UpdatedDate = DateTime.Now
+                        UpdatedDate = DateTime.Now,
                     };
 
+                    if (FavAppsCollection.Any())
+                    {
+                        app.TransitionDelay = FavAppsCollection.Last().TransitionDelay + 100;
+                    }
+                    else
+                    {
+                        app.TransitionDelay = 500;
+                    }
                     FavAppsCollection.Add(app);
                 }
             }
