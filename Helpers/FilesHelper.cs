@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 using System.Windows;
-using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using static System.Windows.Interop.Imaging;
 
 namespace ModernStartMenu_MVVM.Helpers
 {
     public class FilesHelper
     {
-        public ImageSource GetFileIcon(string path, bool smallIcon, bool isDirectory)
+        public (BitmapSource imageSource, string displayName)? GetAppInfo(string path, bool smallIcon, bool isDirectory)
         {
             // SHGFI_USEFILEATTRIBUTES takes the file name and attributes into account if it doesn't exist
             var flags = SHGFI_ICON | SHGFI_USEFILEATTRIBUTES;
@@ -25,10 +25,12 @@ namespace ModernStartMenu_MVVM.Helpers
 
             if (SHGetFileInfo(path, attributes, out var shfi, (uint) Marshal.SizeOf(typeof(SHFILEINFO)), flags) != 0)
             {
-                return System.Windows.Interop.Imaging.CreateBitmapSourceFromHIcon(
-                    shfi.hIcon,
-                    Int32Rect.Empty,
-                    BitmapSizeOptions.FromEmptyOptions());
+                var imageSource =
+                    CreateBitmapSourceFromHIcon(shfi.hIcon, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
+                var displayName = shfi.szDisplayName;
+
+
+                return (imageSource, displayName);
             }
 
             return null;

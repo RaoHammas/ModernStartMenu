@@ -1,5 +1,8 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:system="clr-namespace:System;assembly=System.Runtime">
+
+    <system:Double x:Key="Double500">1500</system:Double>
     <SolidColorBrush x:Key="ColorGridTop" Color="#E7E0E0" />
     <SolidColorBrush x:Key="ColorGridBottom" Color="#F7F7F7" />
     <SolidColorBrush x:Key="ColorWhite" Color="#FFFFFF" />
