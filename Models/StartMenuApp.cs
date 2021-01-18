@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Text.Json.Serialization;
 using System.Windows.Media;
+using Microsoft.WindowsAPICodePack.Shell;
 
 namespace ModernStartMenu_MVVM.Models
 {
@@ -12,5 +13,12 @@ namespace ModernStartMenu_MVVM.Models
         public bool IsFav { get; set; }
         public string Path { get; set; }
         public DateTime UpdatedDate { get; set; }
+
+        [JsonIgnore] 
+        public ShellObject Shell { get; set; }
+
+
+
+
     }
 }
