@@ -3,7 +3,6 @@ using System.Windows;
 using Microsoft.Toolkit.Mvvm.Messaging;
 using Microsoft.Win32;
 using ModernStartMenu_MVVM.Models;
-using ModernStartMenu_MVVM.ViewModels;
 
 namespace ModernStartMenu_MVVM.Views
 {

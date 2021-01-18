@@ -5,16 +5,11 @@ using System.IO;
 using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
-using System.Windows.Controls;
 using Microsoft.Toolkit.Mvvm.Input;
 using Microsoft.Toolkit.Mvvm.Messaging;
-using Microsoft.WindowsAPICodePack.COMNative.Shell;
-using Microsoft.WindowsAPICodePack.COMNative.Shell.PropertySystem;
 using Microsoft.WindowsAPICodePack.Shell;
 using ModernStartMenu_MVVM.Helpers;
 using ModernStartMenu_MVVM.Models;
-using WinCopies.Util;
-using Shell = Microsoft.WindowsAPICodePack.Win32Native.Shell.Shell;
 
 namespace ModernStartMenu_MVVM.ViewModels
 {
@@ -74,6 +69,7 @@ namespace ModernStartMenu_MVVM.ViewModels
         {
             try
             {
+                
                 var senderAppName = sender as string;
                 var senderApp = AllAppsCollection.FirstOrDefault(x => x.Name == senderAppName);
                 if (senderApp != null)
