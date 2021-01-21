@@ -1,10 +1,11 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
 
   <PropertyGroup>
-    <OutputType>WinExe</OutputType>
+	  <OutputType>WinExe</OutputType>
     <TargetFramework>net5.0-windows</TargetFramework>
     <UseWPF>true</UseWPF>
     <Platforms>AnyCPU;x64</Platforms>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
 
   <ItemGroup>
@@ -14,9 +15,9 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.Toolkit.Mvvm" Version="7.0.0-preview4" />
     <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.31" />
-    <PackageReference Include="System.Reactive.Core" Version="5.0.0" />
+    <PackageReference Include="System.Reactive" Version="5.0.0" />
     <PackageReference Include="XamlFlair.WPF" Version="1.2.4" />
-    <PackageReference Include="WinCopies.WindowsAPICodePack.Shell" Version="2.1.0" />
+    <PackageReference Include="WinCopies.WindowsAPICodePack.Shell" Version="3.0.0-preview" />
   </ItemGroup>
 
   <ItemGroup>

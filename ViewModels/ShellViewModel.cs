@@ -8,17 +8,22 @@ using System.Threading.Tasks;
 using Microsoft.Toolkit.Mvvm.Input;
 using Microsoft.Toolkit.Mvvm.Messaging;
 using Microsoft.WindowsAPICodePack.Shell;
-using ModernStartMenu_MVVM.Helpers;
 using ModernStartMenu_MVVM.Models;
+using WinCopies.Collections;
+using Message = ModernStartMenu_MVVM.Models.Message;
 
 namespace ModernStartMenu_MVVM.ViewModels
 {
     public class ShellViewModel : ViewModelBase
     {
         private bool _isShellActivated;
-        private ObservableCollection<StartMenuApp> _favAppsCollection;
+        private ObservableCollection<ShellObject> _favAppsCollection;
         private ObservableCollection<ShellObject> _allAppsCollection;
         private RelayCommand<object> _appClickedCommand;
+        private AsyncRelayCommand<object> _addAppToFavListCommand;
+        public RelayCommand ShellActivatedCommand { get; }
+        public RelayCommand ShellDeactivatedCommand { get; }
+        public AsyncRelayCommand AddNewFavAppCommand { get; }
 
         public bool IsShellActivated
         {
@@ -26,7 +31,7 @@ namespace ModernStartMenu_MVVM.ViewModels
             set => SetProperty(ref _isShellActivated, value);
         }
 
-        public ObservableCollection<StartMenuApp> FavAppsCollection
+        public ObservableCollection<ShellObject> FavAppsCollection
         {
             get => _favAppsCollection;
             set => SetProperty(ref _favAppsCollection, value);
@@ -38,9 +43,11 @@ namespace ModernStartMenu_MVVM.ViewModels
             set => SetProperty(ref _allAppsCollection, value);
         }
 
-        public RelayCommand ShellActivatedCommand { get; }
-        public RelayCommand ShellDeactivatedCommand { get; }
-        public AsyncRelayCommand AddNewFavAppCommand { get; }
+        public AsyncRelayCommand<object> AddAppToFavListCommand
+        {
+            get => _addAppToFavListCommand;
+            set => SetProperty(ref _addAppToFavListCommand, value);
+        }
 
         public RelayCommand<object> AppClickedCommand
         {
@@ -51,75 +58,25 @@ namespace ModernStartMenu_MVVM.ViewModels
         public ShellViewModel()
         {
             IsShellActivated = false;
+
+            AddAppToFavListCommand = new AsyncRelayCommand<object>(AddAppToFavList);
             AllAppsCollection = new ObservableCollection<ShellObject>();
-            FavAppsCollection = new ObservableCollection<StartMenuApp>();
+            FavAppsCollection = new ObservableCollection<ShellObject>();
             ShellActivatedCommand = new RelayCommand(ShellActivated);
             ShellDeactivatedCommand = new RelayCommand(ShellDeactivated);
             AddNewFavAppCommand = new AsyncRelayCommand(AddNewFavApp);
             AppClickedCommand = new RelayCommand<object>(AppClicked);
 
             AllAppsCollection = GetAllUserApps();
-            //FavAppsCollection = ReadFavAppsFromFile().Result;
+
+            FavAppsCollection = GetFavApps();
+            foreach (var app in FavAppsCollection)
+            {
+                AllAppsCollection.AddIfNotContains(app);
+            }
         }
-
-
 
         //=====================================================
-        private void AppClicked(object sender)
-        {
-            try
-            {
-                
-                var senderAppName = sender as string;
-                var senderApp = AllAppsCollection.FirstOrDefault(x => x.Name == senderAppName);
-                if (senderApp != null)
-                {
-                    var path = @"shell:appsFolder\" + senderApp.ParsingName;
-                    using Process process = new Process
-                    {
-                        StartInfo =
-                        {
-                            FileName = path,
-                            UseShellExecute = true,
-                        }
-                    };
-                    process.Start();
-                }
-            }
-            catch (Exception e)
-            {
-                WeakReferenceMessenger.Default.Send(new Message(null)
-                {
-                    Caption = "Error",
-                    MessageText = e.Message
-                });
-            }
-        }
-        private ObservableCollection<ShellObject> GetAllUserApps()
-        {
-            // GUID taken from https://docs.microsoft.com/en-us/windows/win32/shell/knownfolderid
-            var folderIdAppsFolder = new Guid("{1e87508d-89c2-42f0-8a7e-645a0f50ca58}");
-            var appsFolder = KnownFolderHelper.FromKnownFolderId(folderIdAppsFolder);
-            var apps = new ObservableCollection<ShellObject>();
-            
-            foreach (var app in appsFolder)
-            {
-                apps.Add(app);
-            }
-
-            return apps;
-        }
-
-        private void ShellActivated()
-        {
-            IsShellActivated = true;
-        }
-
-        private void ShellDeactivated()
-        {
-            IsShellActivated = false;
-        }
-
         private async Task AddNewFavApp()
         {
             try
@@ -138,24 +95,10 @@ namespace ModernStartMenu_MVVM.ViewModels
                 var filePath = WeakReferenceMessenger.Default.Send<FilePickerMessage>();
                 if (filePath != String.Empty)
                 {
-                    var helper = new FilesHelper();
-                    var appInfo = helper.GetAppInfo(filePath, false, false);
-
-                    if (appInfo != null)
-                    {
-                        StartMenuApp app = new StartMenuApp
-                        {
-                            AppIcon = appInfo.Value.imageSource,
-                            AppName = appInfo.Value.displayName,
-                            IsFav = true,
-                            Path = filePath,
-                            UpdatedDate = DateTime.Now,
-                        };
-
-
-                        FavAppsCollection.Add(app);
-                        var result = await WriteFavAppToFileAsync();
-                    }
+                    var app = ShellObject.FromParsingName(filePath);
+                    FavAppsCollection.Add(app);
+                    AllAppsCollection.Add(app);
+                    await SaveFavAppAsync();
                 }
             }
             catch (Exception e)
@@ -168,46 +111,147 @@ namespace ModernStartMenu_MVVM.ViewModels
             }
         }
 
-        private async Task<bool> WriteFavAppToFileAsync()
-        {
-            await using var stream = File.Create("FavApps.json");
-            await JsonSerializer.SerializeAsync(stream, FavAppsCollection);
-            return true;
-        }
-
-        private async Task<ObservableCollection<StartMenuApp>> ReadFavAppsFromFile()
+        private async Task AddAppToFavList(object sender)
         {
             try
             {
-                await using var stream = File.OpenRead("FavApps.json");
-                var apps = await JsonSerializer.DeserializeAsync<ObservableCollection<StartMenuApp>>(stream);
+                var senderAppName = sender as string;
+                var senderApp = AllAppsCollection.FirstOrDefault(x => x.Name == senderAppName);
+                if (senderApp != null)
+                {
+                    FavAppsCollection.Add(senderApp);
+                    await SaveFavAppAsync();
+                }
+            }
+            catch (Exception e)
+            {
+                WeakReferenceMessenger.Default.Send(new Message(null)
+                {
+                    Caption = "Error",
+                    MessageText = e.Message
+                });
+            }
+        }
 
-                FilesHelper helper = new FilesHelper();
+        private void AppClicked(object sender)
+        {
+            try
+            {
+                var senderAppName = sender as string;
+                var senderApp = AllAppsCollection.FirstOrDefault(x => x.Name == senderAppName);
+                if (senderApp != null)
+                {
+                    try
+                    {
+                        var path = @"shell:appsFolder\" + senderApp.ParsingName;
+                        using Process process = new Process
+                        {
+                            StartInfo =
+                            {
+                                FileName = path,
+                                UseShellExecute = true,
+                            }
+                        };
+                        process.Start();
+                    }
+                    catch (Exception e)
+                    {
+                        var path = senderApp.ParsingName;
+                        using Process process = new Process
+                        {
+                            StartInfo =
+                            {
+                                FileName = path,
+                                UseShellExecute = true,
+                            }
+                        };
+                        process.Start();
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                WeakReferenceMessenger.Default.Send(new Message(null)
+                {
+                    Caption = "Error",
+                    MessageText = e.Message
+                });
+            }
+        }
+
+        private ObservableCollection<ShellObject> GetAllUserApps()
+        {
+            // GUID taken from https://docs.microsoft.com/en-us/windows/win32/shell/knownfolderid
+            var folderIdAppsFolder = new Guid("{1e87508d-89c2-42f0-8a7e-645a0f50ca58}");
+            var appsFolder = KnownFolderHelper.FromKnownFolderId(folderIdAppsFolder);
+            var apps = new ObservableCollection<ShellObject>();
+
+            foreach (var app in appsFolder)
+            {
+                apps.Add(app);
+            }
+
+            return apps;
+        }
+
+        private void ShellActivated()
+        {
+            IsShellActivated = true;
+        }
+
+        private void ShellDeactivated()
+        {
+            IsShellActivated = false;
+        }
+
+        private async Task SaveFavAppAsync()
+        {
+            await using var stream = File.Create("FavApps.json");
+
+            var apps = new ObservableCollection<FavApp>();
+            foreach (var app in FavAppsCollection)
+            {
+                apps.Add(new FavApp
+                {
+                    Name = app.Name,
+                    ParsingName = app.ParsingName
+                });
+            }
+
+            await JsonSerializer.SerializeAsync(stream, apps);
+        }
+
+        private ObservableCollection<ShellObject> GetFavApps()
+        {
+            try
+            {
+                var reader = File.ReadAllText("FavApps.json");
+                var apps = JsonSerializer.Deserialize<ObservableCollection<FavApp>>(reader);
+                var appsCollection = new ObservableCollection<ShellObject>();
+
                 foreach (var app in apps)
                 {
                     try
                     {
-                        var appInfo = helper.GetAppInfo(app.Path, false, false);
-                        if (appInfo != null)
-                        {
-                            app.AppIcon = appInfo.Value.imageSource;
-                            app.AppName = appInfo.Value.displayName;
-                        }
+                        var path = @"shell:appsFolder\" + app.ParsingName;
+                        var shellApp = ShellObject.FromParsingName(path);
+                        appsCollection.Add(shellApp);
                     }
                     catch (Exception e)
                     {
-                        continue;
+                        var shellApp = ShellObject.FromParsingName(app.ParsingName);
+                        appsCollection.Add(shellApp);
                     }
                 }
 
-                return apps;
+                return appsCollection;
             }
             catch (Exception e)
             {
                 // ignored
             }
 
-            return new ObservableCollection<StartMenuApp>();
+            return new ObservableCollection<ShellObject>();
         }
     } // end of class
 }

@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Windows;
+using System.Windows.Controls;
 using Microsoft.Toolkit.Mvvm.Messaging;
 using Microsoft.Win32;
 using ModernStartMenu_MVVM.Models;
+using ModernStartMenu_MVVM.ViewModels;
 
 namespace ModernStartMenu_MVVM.Views
 {
@@ -22,6 +24,7 @@ namespace ModernStartMenu_MVVM.Views
             });
 
             InitializeComponent();
+            Focus();
         }
 
         private void ShowMessageDialog(Message message)
@@ -53,6 +56,14 @@ namespace ModernStartMenu_MVVM.Views
             }
 
             return String.Empty;
+        }
+
+        private void MenuItem_OnClick(object sender, RoutedEventArgs e)
+        {
+            if (DataContext is ShellViewModel ctx)
+            {
+                ctx.AddAppToFavListCommand.Execute(((MenuItem)sender).Tag.ToString());
+            }
         }
     } // end of class
 }
