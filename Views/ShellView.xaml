@@ -5,7 +5,9 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:xamlFlair="clr-namespace:XamlFlair;assembly=XamlFlair.WPF"
         xmlns:viewModels="clr-namespace:ModernStartMenu_MVVM.ViewModels"
-        xmlns:b="http://schemas.microsoft.com/xaml/behaviors" x:Name="Shell"
+        xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
+        xmlns:converters="clr-namespace:ModernStartMenu_MVVM.Converters"
+        x:Name="Shell"
         mc:Ignorable="d" WindowStartupLocation="CenterScreen" ShowInTaskbar="True"
         AllowsTransparency="True" WindowStyle="None" Background="Transparent" ResizeMode="NoResize"
         Title="ShellView" Width="1180" Height="620">
@@ -20,7 +22,6 @@
     <Window.DataContext>
         <viewModels:ShellViewModel />
     </Window.DataContext>
-
     <Border Margin="20 50 20 20"
             xamlFlair:Animations.Primary="{xamlFlair:Animate BasedOn={StaticResource FadeInAndGrow}, Duration=200,Event=None}"
             xamlFlair:Animations.Secondary="{xamlFlair:Animate BasedOn={StaticResource FadeOutAndShrink}, Delay=200,Event=None}"
@@ -47,7 +48,7 @@
                         </Grid.ColumnDefinitions>
                         <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
                             <Border Background="{StaticResource ColorWhite}"
-                                    ToolTip="Open windows power options dialog"
+                                    ToolTip="Open windows power options dialog" Cursor="Hand"
                                     CornerRadius="{StaticResource BorderCornerValue}" Height="30"
                                     xamlFlair:Animations.Primary="{xamlFlair:Animate BasedOn={StaticResource FadeInAndSlideFromLeft}, Delay=400,Duration=400,Event=None}"
                                     xamlFlair:Animations.Secondary="{xamlFlair:Animate BasedOn={StaticResource FadeOutAndSlideToLeft}, Delay=400,Duration=400,Event=None}"
@@ -64,7 +65,7 @@
                                 </StackPanel>
                             </Border>
                             <Border Margin="10 0 0 0" Background="{StaticResource ColorWhite}"
-                                    ToolTip="Check this to enable google search"
+                                    ToolTip="Check this to enable google search" Cursor="Hand"
                                     CornerRadius="{StaticResource BorderCornerValue}" Height="30"
 
                                     xamlFlair:Animations.Primary="{xamlFlair:Animate BasedOn={StaticResource FadeInAndSlideFromLeft}, Delay=300,Duration=300,Event=None}"
@@ -82,7 +83,7 @@
                                 </StackPanel>
                             </Border>
                             <Border Margin="15 0 0 0" Background="{StaticResource ColorWhite}"
-                                    ToolTip="Add an app to start menu"
+                                    ToolTip="Add an app to start menu" Cursor="Hand"
                                     CornerRadius="{StaticResource BorderCornerValue}" Height="30" Width="35"
 
                                     xamlFlair:Animations.Primary="{xamlFlair:Animate BasedOn={StaticResource FadeInAndSlideFromLeft}, Delay=200,Duration=200,Event=None}"
@@ -90,6 +91,12 @@
                                     xamlFlair:Animations.CombinedBinding="{Binding IsShellActivated,UpdateSourceTrigger=PropertyChanged}"
 
                                     Effect="{StaticResource ShadowEffectDefault}">
+                                <b:Interaction.Triggers>
+                                    <b:EventTrigger EventName="MouseLeftButtonUp">
+                                        <b:InvokeCommandAction CommandParameter="false"
+                                                               Command="{Binding AddNewUserAppCommand}" />
+                                    </b:EventTrigger>
+                                </b:Interaction.Triggers>
                                 <TextBlock VerticalAlignment="Center" FontSize="16" HorizontalAlignment="Center"
                                            Text="&#xE710;" FontFamily="Segoe MDL2 Assets"
                                            Foreground="{StaticResource TextColor}" />
@@ -182,20 +189,23 @@
                                                 BorderThickness="1" BorderBrush="{StaticResource ColorGridTop}"
                                                 xamlFlair:Animations.Primary="{xamlFlair:Animate BasedOn={StaticResource Shrink}, Event=PointerOver}"
                                                 xamlFlair:Animations.Secondary="{xamlFlair:Animate BasedOn={StaticResource Grow}, Event=PointerExit}"
-                                                ToolTip="{Binding Name}"
+                                                ToolTip="{Binding ParsingName}"
                                                 Tag="{Binding RelativeSource={RelativeSource AncestorType=Window}}"
                                                 Cursor="Hand">
                                             <Border.ContextMenu>
                                                 <ContextMenu>
-                                                    <MenuItem Header="Add to favorites" Height="40"
-                                                              CommandParameter="{Binding Name}" Tag="{Binding Name}"
+                                                    <MenuItem x:Name="Fav"  Header="Add to favorites" Height="30"
+                                                              Tag="{Binding DisplayName}"
+                                                              Click="MenuItem_OnClick" />
+                                                    <MenuItem x:Name="Star" Header="Star this app" Height="30"
+                                                              Tag="{Binding DisplayName}"
                                                               Click="MenuItem_OnClick" />
                                                 </ContextMenu>
                                             </Border.ContextMenu>
                                             <b:Interaction.Triggers>
                                                 <b:EventTrigger EventName="MouseLeftButtonUp">
                                                     <b:InvokeCommandAction
-                                                        CommandParameter="{Binding Name}"
+                                                        CommandParameter="{Binding DisplayName}"
                                                         Command="{Binding RelativeSource={RelativeSource AncestorType=Window}, Path=DataContext.AppClickedCommand}" />
                                                 </b:EventTrigger>
                                             </b:Interaction.Triggers>
@@ -204,15 +214,20 @@
                                                     <RowDefinition Height="*" />
                                                     <RowDefinition Height="Auto" />
                                                 </Grid.RowDefinitions>
-                                                <Image Grid.Row="0" Source="{Binding Thumbnail.SmallBitmapSource}"
+                                                <Image Grid.Row="0" Source="{Binding IconSource}"
                                                        HorizontalAlignment="Center" VerticalAlignment="Center"
                                                        Height="30"
                                                        Width="30" />
-                                                <TextBlock Grid.Row="1" Text="{Binding Name}"
+                                                <TextBlock Grid.Row="1" Text="{Binding DisplayName}"
                                                            HorizontalAlignment="Center"
                                                            VerticalAlignment="Center"
                                                            Margin="10 0 10 0" FontSize="10" TextAlignment="Center"
                                                            TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" />
+
+                                                <TextBlock Text="&#xE735;" IsEnabled="True"
+                                                           Visibility="{Binding IsStar,Converter={StaticResource BoolToVisibilityConverter},
+                                                    Mode=OneWay,UpdateSourceTrigger=PropertyChanged,NotifyOnSourceUpdated=True}"
+                                                           FontFamily="Segoe MDL2 Assets" Margin="5" Foreground="#EA8500" />
                                             </Grid>
                                         </Border>
 
@@ -255,12 +270,12 @@
                                         CornerRadius="{StaticResource BorderCornerValue}"
                                         xamlFlair:Animations.Primary="{xamlFlair:Animate BasedOn={StaticResource Shrink}, Event=PointerOver,Duration=300}"
                                         xamlFlair:Animations.Secondary="{xamlFlair:Animate BasedOn={StaticResource Grow}, Event=PointerExit,Duration=300}"
-                                        ToolTip="{Binding Name}"
+                                        ToolTip="{Binding ParsingName}"
                                         Margin="0 0 10 0" Cursor="Hand">
                                     <b:Interaction.Triggers>
                                         <b:EventTrigger EventName="MouseLeftButtonUp">
                                             <b:InvokeCommandAction
-                                                CommandParameter="{Binding Name}"
+                                                CommandParameter="{Binding DisplayName}"
                                                 Command="{Binding RelativeSource={RelativeSource AncestorType=Window}, Path=DataContext.AppClickedCommand}" />
                                         </b:EventTrigger>
                                     </b:Interaction.Triggers>
@@ -269,10 +284,11 @@
                                             <RowDefinition Height="*" />
                                             <RowDefinition Height="Auto" />
                                         </Grid.RowDefinitions>
-                                        <Image Grid.Row="0" Source="{Binding Thumbnail.SmallBitmapSource}"
+                                        <Image Grid.Row="0" Source="{Binding IconSource}"
                                                HorizontalAlignment="Center" VerticalAlignment="Center" Height="30"
                                                Width="30" />
-                                        <TextBlock Grid.Row="1" Text="{Binding Name}" HorizontalAlignment="Center"
+                                        <TextBlock Grid.Row="1" Text="{Binding DisplayName}"
+                                                   HorizontalAlignment="Center"
                                                    VerticalAlignment="Center"
                                                    Margin="10 0 10 0" FontSize="8" TextAlignment="Center"
                                                    TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" />
@@ -294,7 +310,8 @@
 
                         <b:Interaction.Triggers>
                             <b:EventTrigger EventName="MouseLeftButtonUp">
-                                <b:InvokeCommandAction Command="{Binding AddNewFavAppCommand}" />
+                                <b:InvokeCommandAction CommandParameter="true"
+                                                       Command="{Binding AddNewUserAppCommand}" />
                             </b:EventTrigger>
                         </b:Interaction.Triggers>
                         <TextBlock VerticalAlignment="Center" FontSize="24" HorizontalAlignment="Center"

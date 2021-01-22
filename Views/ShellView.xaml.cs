@@ -60,9 +60,17 @@ namespace ModernStartMenu_MVVM.Views
 
         private void MenuItem_OnClick(object sender, RoutedEventArgs e)
         {
+            var menu = sender as MenuItem;
             if (DataContext is ShellViewModel ctx)
             {
-                ctx.AddAppToFavListCommand.Execute(((MenuItem)sender).Tag.ToString());
+                if (menu.Name == "Fav")
+                {
+                    ctx.AddAppToFavListCommand.Execute(((MenuItem) sender).Tag.ToString());
+                }
+                else
+                {
+                    ctx.StarTheAppCommand.Execute(((MenuItem) sender).Tag.ToString());
+                }
             }
         }
     } // end of class
