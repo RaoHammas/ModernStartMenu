@@ -3,14 +3,14 @@
                     xmlns:system="clr-namespace:System;assembly=System.Runtime"
                     xmlns:converters="clr-namespace:ModernStartMenu_MVVM.Converters">
     <converters:BoolToVisConverter x:Key="BoolToVisibilityConverter" />
+    <converters:InvertBoolToVisConverter x:Key="InvertBoolToVisibilityConverter" />
 
     <system:Double x:Key="Double500">1500</system:Double>
     <SolidColorBrush x:Key="ColorGridTop" Color="#E7E0E0" />
     <SolidColorBrush x:Key="ColorGridBottom" Color="#F7F7F7" />
     <SolidColorBrush x:Key="ColorWhite" Color="#FFFFFF" />
     <SolidColorBrush x:Key="TextColor" Color="#474747" />
-    <DropShadowEffect x:Key="ShadowEffectDefault" Color="Black" BlurRadius="20" Opacity="0.1" ShadowDepth="10"
-                      Direction="-43" />
+    <DropShadowEffect x:Key="ShadowEffectDefault" Opacity="0.3" />
     <DropShadowEffect x:Key="ToolTipShadowEffectDefault" Color="Black" BlurRadius="10" Opacity="0.1" ShadowDepth="10"
                       Direction="-43" />
     <BlurEffect x:Key="BlurEffectDefault" Radius="10" KernelType="Gaussian" RenderingBias="Performance" />
@@ -40,19 +40,49 @@
         </Setter>
     </Style>
 
+
     <Style TargetType="ContextMenu">
+        <Setter Property="OverridesDefaultStyle" Value="true" />
+        <Setter Property="SnapsToDevicePixels" Value="True" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type ContextMenu}">
+
                     <Border x:Name="Border" Effect="{StaticResource ShadowEffectDefault}"
                             Background="{StaticResource ColorGridTop}" Margin="15"
                             BorderBrush="{StaticResource ColorGridTop}"
                             BorderThickness="1" CornerRadius="{StaticResource BorderCornerValue}">
-                        <StackPanel IsItemsHost="True"
+                        <StackPanel IsItemsHost="True" Orientation="Vertical"
                                     KeyboardNavigation.DirectionalNavigation="Cycle" />
                     </Border>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
+    </Style>
+
+    <!--Scrollbar Thumbs-->
+    <Style x:Key="ScrollThumbs" TargetType="{x:Type Thumb}">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type Thumb}">
+                    <Grid x:Name="Grid">
+                        <Rectangle HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Width="Auto" Height="Auto" Fill="Transparent" />
+                        <Border x:Name="Rectangle1" CornerRadius="10" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Width="Auto" Height="Auto"  Background="{TemplateBinding Background}" />
+                    </Grid>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="Tag" Value="Horizontal">
+                            <Setter TargetName="Rectangle1" Property="Width" Value="Auto" />
+                            <Setter TargetName="Rectangle1" Property="Height" Value="7" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!--ScrollBars-->
+    <Style TargetType="ScrollBar">
+        <Setter Property="Background" Value="White"></Setter>
+        <Setter Property="Width" Value="5"></Setter>
     </Style>
 </ResourceDictionary>

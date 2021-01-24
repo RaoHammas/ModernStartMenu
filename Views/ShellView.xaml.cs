@@ -24,7 +24,7 @@ namespace ModernStartMenu_MVVM.Views
             });
 
             InitializeComponent();
-            Focus();
+            BoxSearch.Focus();
         }
 
         private void ShowMessageDialog(Message message)
@@ -63,11 +63,19 @@ namespace ModernStartMenu_MVVM.Views
             var menu = sender as MenuItem;
             if (DataContext is ShellViewModel ctx)
             {
-                if (menu.Name == "Fav")
+                if (menu.Name == "FavApp")
                 {
                     ctx.AddAppToFavListCommand.Execute(((MenuItem) sender).Tag.ToString());
+                }             
+                else if (menu.Name == "RemoveFav")
+                {
+                    ctx.RemoveFavAppCommand.Execute(((MenuItem) sender).Tag.ToString());
                 }
-                else
+                else if (menu.Name == "RemoveStar")
+                {
+                    ctx.RemoveStarAppCommand.Execute(((MenuItem)sender).Tag.ToString());
+                }
+                else if(menu.Name == "StarApp")
                 {
                     ctx.StarTheAppCommand.Execute(((MenuItem) sender).Tag.ToString());
                 }

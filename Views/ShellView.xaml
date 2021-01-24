@@ -6,7 +6,6 @@
         xmlns:xamlFlair="clr-namespace:XamlFlair;assembly=XamlFlair.WPF"
         xmlns:viewModels="clr-namespace:ModernStartMenu_MVVM.ViewModels"
         xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
-        xmlns:converters="clr-namespace:ModernStartMenu_MVVM.Converters"
         x:Name="Shell"
         mc:Ignorable="d" WindowStartupLocation="CenterScreen" ShowInTaskbar="True"
         AllowsTransparency="True" WindowStyle="None" Background="Transparent" ResizeMode="NoResize"
@@ -45,6 +44,7 @@
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition />
                             <ColumnDefinition />
+
                         </Grid.ColumnDefinitions>
                         <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
                             <Border Background="{StaticResource ColorWhite}"
@@ -105,31 +105,63 @@
                         <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center" />
                     </Grid>
                 </Border>
-                <Border x:Name="SectionSearch" Grid.Row="1" HorizontalAlignment="Stretch" VerticalAlignment="Top"
-                        BorderThickness="0" CornerRadius="{StaticResource BorderCornerValue}"
-                        Background="{StaticResource ColorWhite}" Margin="180 20 180 0" Height="45"
+                <Grid Grid.Row="1">
+                    <Border x:Name="SectionSearch" HorizontalAlignment="Stretch" VerticalAlignment="Top"
+                            BorderThickness="0" CornerRadius="{StaticResource BorderCornerValue}"
+                            Background="{StaticResource ColorWhite}" Width="700" Margin="0 20 0 0" Height="45"
+                            xamlFlair:Animations.Primary="{xamlFlair:Animate BasedOn={StaticResource FadeInAndSlideFromTop}, Delay=300,Duration=300,Event=None}"
+                            xamlFlair:Animations.Secondary="{xamlFlair:Animate BasedOn={StaticResource FadeOutAndSlideToTop}, Delay=300,Duration=300,Event=None}"
+                            xamlFlair:Animations.CombinedBinding="{Binding IsShellActivated,UpdateSourceTrigger=PropertyChanged}"
+                            Effect="{StaticResource ShadowEffectDefault}">
+                        <Grid Margin="10 5 10 5">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition />
+                                <ColumnDefinition Width="30" />
+                            </Grid.ColumnDefinitions>
+                            <TextBox x:Name="BoxSearch" TabIndex="1" Grid.Column="0" BorderThickness="0"
+                                     FontWeight="Light"
+                                     FontSize="24"
+                                     Text="{Binding SearchText,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged,NotifyOnTargetUpdated=True,NotifyOnSourceUpdated=True,Delay=300}"
+                                     Background="Transparent" Foreground="{StaticResource TextColor}">
+                                <TextBox.InputBindings>
+                                    <KeyBinding Command="{Binding SearchBoxEnterPressedCommand}" Key="Return" />
+                                </TextBox.InputBindings>
+                            </TextBox>
+                            <TextBlock Grid.Column="1" FontSize="28" FontWeight="ExtraLight"
+                                       Foreground="CornflowerBlue"
+                                       VerticalAlignment="Center" HorizontalAlignment="Left" Text="&#xE721;"
+                                       FontFamily="Segoe MDL2 Assets" />
+                        </Grid>
+                    </Border>
+                    <Grid VerticalAlignment="Top" HorizontalAlignment="Left" Margin="0 -10 0 0"
+                          xamlFlair:Animations.Primary="{xamlFlair:Animate BasedOn={StaticResource FadeInAndSlideFromLeft}, Delay=300,Duration=300,Event=None}"
+                          xamlFlair:Animations.Secondary="{xamlFlair:Animate BasedOn={StaticResource FadeOutAndSlideToLeft}, Delay=300,Duration=300,Event=None}"
+                          xamlFlair:Animations.CombinedBinding="{Binding IsShellActivated,UpdateSourceTrigger=PropertyChanged}"
+                          >
+                        <Grid.Effect>
+                            <DropShadowEffect Opacity="0.3"></DropShadowEffect>
+                        </Grid.Effect>
+                        <StackPanel Orientation="Vertical" HorizontalAlignment="Left"
+                                    VerticalAlignment="Center">
+                            <StackPanel Orientation="Horizontal">
+                                <Image x:Name="WeatherImage" Height="100"
+                                       VerticalAlignment="Center" HorizontalAlignment="Left" Margin="0 0 0 -5"
+                                       Source="{Binding WeatherDetails.DisplayIcon,UpdateSourceTrigger=PropertyChanged}" />
+                                <TextBlock x:Name="TextTemperature" VerticalAlignment="Center" Margin="-20 0 0 0"
+                                           FontSize="38" FontWeight="Bold" Foreground="{StaticResource ColorWhite}"
+                                            >
+                                    <Run Text="{Binding WeatherDetails.MainWeather.Temperature,StringFormat=N0,UpdateSourceTrigger=PropertyChanged}"></Run>
+                                    <Run>°C</Run>
+                                </TextBlock>
+                            </StackPanel>
 
-                        xamlFlair:Animations.Primary="{xamlFlair:Animate BasedOn={StaticResource FadeInAndSlideFromTop}, Delay=300,Duration=300,Event=None}"
-                        xamlFlair:Animations.Secondary="{xamlFlair:Animate BasedOn={StaticResource FadeOutAndSlideToTop}, Delay=300,Duration=300,Event=None}"
-                        xamlFlair:Animations.CombinedBinding="{Binding IsShellActivated,UpdateSourceTrigger=PropertyChanged}"
-
-
-                        Effect="{StaticResource ShadowEffectDefault}">
-                    <Grid Margin="10 5 10 5">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition />
-                            <ColumnDefinition Width="30" />
-                        </Grid.ColumnDefinitions>
-                        <TextBox x:Name="BoxSearch" TabIndex="1" Grid.Column="0" BorderThickness="0" FontWeight="Light"
-                                 FontSize="24"
-                                 Background="Transparent" Foreground="{StaticResource TextColor}">
-                            Search
-                        </TextBox>
-                        <TextBlock Grid.Column="1" FontSize="28" FontWeight="ExtraLight" Foreground="CornflowerBlue"
-                                   VerticalAlignment="Center" HorizontalAlignment="Left" Text="&#xE721;"
-                                   FontFamily="Segoe MDL2 Assets" />
+                            <TextBlock VerticalAlignment="Center" Margin="5 -30 0 0" FontSize="24" HorizontalAlignment="Right"
+                                       Visibility="Visible" FontWeight="Bold" Foreground="{StaticResource ColorWhite}"
+                                       Text="{Binding WeatherDetails.Weather[0].Description,UpdateSourceTrigger=PropertyChanged}" />
+                        </StackPanel>
                     </Grid>
-                </Border>
+                </Grid>
+
                 <Border x:Name="SectionMenuItems" Grid.Row="2" Background="{StaticResource ColorWhite}"
                         CornerRadius="0 0 5 5">
                     <Grid>
@@ -138,6 +170,236 @@
                             <RowDefinition Height="*" />
                             <RowDefinition Height="50" />
                         </Grid.RowDefinitions>
+                        <ScrollViewer Grid.Row="1" Margin="0 0 0 0"
+                                      VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                            <Grid>
+                                <ItemsControl x:Name="AllAppsItemsControl" HorizontalAlignment="Center"
+                                              VerticalAlignment="Center"
+                                              Visibility="{Binding IsSearchActive,Converter={StaticResource InvertBoolToVisibilityConverter}}"
+                                              ItemsSource="{Binding AllAppsCollection}"
+                                              xamlFlair:Animations.CombinedBinding="{Binding RelativeSource={RelativeSource AncestorType=Window}, Path=DataContext.IsShellActivated,UpdateSourceTrigger=PropertyChanged}"
+                                              xamlFlair:Animations.Primary="{xamlFlair:Animate BasedOn={StaticResource FadeIn}, Delay=200,Duration=200,Event=None}"
+                                              xamlFlair:Animations.Secondary="{xamlFlair:Animate BasedOn={StaticResource FadeOut},Event=None}">
+                                    <ItemsControl.ItemsPanel>
+                                        <ItemsPanelTemplate>
+                                            <WrapPanel
+                                                Orientation="Horizontal" HorizontalAlignment="Center" />
+                                        </ItemsPanelTemplate>
+                                    </ItemsControl.ItemsPanel>
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <Border Background="{StaticResource ColorWhite}" Height="70" Width="90"
+                                                    CornerRadius="{StaticResource BorderCornerValue}" Margin="10"
+                                                    BorderThickness="1" BorderBrush="{StaticResource ColorGridTop}"
+                                                    xamlFlair:Animations.Primary="{xamlFlair:Animate BasedOn={StaticResource Shrink}, Event=PointerOver}"
+                                                    xamlFlair:Animations.Secondary="{xamlFlair:Animate BasedOn={StaticResource Grow}, Event=PointerExit}"
+                                                    ToolTip="{Binding ParsingName}"
+                                                    Tag="{Binding RelativeSource={RelativeSource AncestorType=Window}}"
+                                                    Cursor="Hand">
+                                                <Border.ContextMenu>
+                                                    <ContextMenu>
+                                                        <MenuItem x:Name="FavApp" Height="30"
+                                                                  Tag="{Binding DisplayName}"
+                                                                  Visibility="{Binding IsFav,Converter={StaticResource InvertBoolToVisibilityConverter},
+                                                        Mode=OneWay,UpdateSourceTrigger=PropertyChanged,NotifyOnSourceUpdated=True}"
+                                                                  Click="MenuItem_OnClick">
+                                                            <MenuItem.Header>
+                                                                <TextBlock VerticalAlignment="Center">
+                                                                    <Run FontFamily="Segoe MDL2 Assets" FontSize="14"
+                                                                         FontWeight="Bold">
+                                                                        &#xE728;
+                                                                    </Run>
+                                                                    <Run />
+                                                                    <Run />
+                                                                    <Run>Add To Favorites</Run>
+                                                                </TextBlock>
+                                                            </MenuItem.Header>
+                                                        </MenuItem>
+                                                        <MenuItem x:Name="StarApp" Height="30"
+                                                                  Tag="{Binding DisplayName}"
+                                                                  Visibility="{Binding IsStar,Converter={StaticResource InvertBoolToVisibilityConverter},
+                                                        Mode=OneWay,UpdateSourceTrigger=PropertyChanged,NotifyOnSourceUpdated=True}"
+                                                                  Click="MenuItem_OnClick">
+                                                            <MenuItem.Header>
+                                                                <TextBlock VerticalAlignment="Center">
+                                                                    <Run FontFamily="Segoe MDL2 Assets" FontSize="14"
+                                                                         FontWeight="Bold">
+                                                                        &#xE735;
+                                                                    </Run>
+                                                                    <Run />
+                                                                    <Run />
+                                                                    <Run>Star this app</Run>
+                                                                </TextBlock>
+                                                            </MenuItem.Header>
+                                                        </MenuItem>
+                                                        <MenuItem x:Name="RemoveStar" Height="30"
+                                                                  Visibility="{Binding IsStar,Converter={StaticResource BoolToVisibilityConverter},
+                                                        Mode=OneWay,UpdateSourceTrigger=PropertyChanged,NotifyOnSourceUpdated=True}"
+                                                                  Tag="{Binding DisplayName}"
+                                                                  Click="MenuItem_OnClick">
+                                                            <MenuItem.Header>
+                                                                <TextBlock VerticalAlignment="Center">
+                                                                    <Run FontFamily="Segoe MDL2 Assets" FontSize="14"
+                                                                         FontWeight="Bold">
+                                                                        &#xE8D9;
+                                                                    </Run>
+                                                                    <Run />
+                                                                    <Run />
+                                                                    <Run>Un-Star this app</Run>
+                                                                </TextBlock>
+                                                            </MenuItem.Header>
+                                                        </MenuItem>
+                                                    </ContextMenu>
+
+                                                </Border.ContextMenu>
+                                                <b:Interaction.Triggers>
+                                                    <b:EventTrigger EventName="MouseLeftButtonUp">
+                                                        <b:InvokeCommandAction
+                                                            CommandParameter="{Binding DisplayName}"
+                                                            Command="{Binding RelativeSource={RelativeSource AncestorType=Window}, Path=DataContext.AppClickedCommand}" />
+                                                    </b:EventTrigger>
+                                                </b:Interaction.Triggers>
+                                                <Grid Margin="0 0 0 10">
+                                                    <Grid.RowDefinitions>
+                                                        <RowDefinition Height="*" />
+                                                        <RowDefinition Height="Auto" />
+                                                    </Grid.RowDefinitions>
+                                                    <Image Grid.Row="0" Source="{Binding IconSource}"
+                                                           HorizontalAlignment="Center" VerticalAlignment="Center"
+                                                           Height="30"
+                                                           Width="30" />
+                                                    <TextBlock Grid.Row="1" Text="{Binding DisplayName}"
+                                                               HorizontalAlignment="Center"
+                                                               VerticalAlignment="Center"
+                                                               Margin="10 0 10 0" FontSize="10" TextAlignment="Center"
+                                                               TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" />
+
+                                                    <TextBlock Text="&#xE735;" IsEnabled="True"
+                                                               Visibility="{Binding IsStar,Converter={StaticResource BoolToVisibilityConverter},
+                                                    Mode=OneWay,UpdateSourceTrigger=PropertyChanged,NotifyOnSourceUpdated=True}"
+                                                               FontFamily="Segoe MDL2 Assets" Margin="5"
+                                                               Foreground="#EA8500" />
+                                                </Grid>
+                                            </Border>
+
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                                <ItemsControl x:Name="SearchAppsItemsControl" HorizontalAlignment="Center"
+                                              VerticalAlignment="Center"
+                                              Visibility="{Binding IsSearchActive,Converter={StaticResource BoolToVisibilityConverter}}"
+                                              ItemsSource="{Binding SearchCollection}"
+                                              xamlFlair:Animations.CombinedBinding="{Binding RelativeSource={RelativeSource AncestorType=Window}, Path=DataContext.IsSearchActive,UpdateSourceTrigger=PropertyChanged}"
+                                              xamlFlair:Animations.Primary="{xamlFlair:Animate BasedOn={StaticResource FadeIn}, Delay=200,Duration=200,Event=Visibility}"
+                                              xamlFlair:Animations.Secondary="{xamlFlair:Animate BasedOn={StaticResource FadeOut},Event=Visibility}">
+                                    <ItemsControl.ItemsPanel>
+                                        <ItemsPanelTemplate>
+                                            <WrapPanel
+                                                Orientation="Horizontal" HorizontalAlignment="Center" />
+                                        </ItemsPanelTemplate>
+                                    </ItemsControl.ItemsPanel>
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <Border Background="{StaticResource ColorWhite}" Height="70" Width="90"
+                                                    CornerRadius="{StaticResource BorderCornerValue}" Margin="10"
+                                                    BorderThickness="1" BorderBrush="{StaticResource ColorGridTop}"
+                                                    xamlFlair:Animations.Primary="{xamlFlair:Animate BasedOn={StaticResource Shrink}, Event=PointerOver}"
+                                                    xamlFlair:Animations.Secondary="{xamlFlair:Animate BasedOn={StaticResource Grow}, Event=PointerExit}"
+                                                    ToolTip="{Binding ParsingName}"
+                                                    Tag="{Binding RelativeSource={RelativeSource AncestorType=Window}}"
+                                                    Cursor="Hand">
+                                                <Border.ContextMenu>
+                                                    <ContextMenu>
+                                                        <MenuItem x:Name="FavApp" Height="30"
+                                                                  Tag="{Binding DisplayName}"
+                                                                  Visibility="{Binding IsFav,Converter={StaticResource InvertBoolToVisibilityConverter},
+                                                        Mode=OneWay,UpdateSourceTrigger=PropertyChanged,NotifyOnSourceUpdated=True}"
+                                                                  Click="MenuItem_OnClick">
+                                                            <MenuItem.Header>
+                                                                <TextBlock VerticalAlignment="Center">
+                                                                    <Run FontFamily="Segoe MDL2 Assets" FontSize="14"
+                                                                         FontWeight="Bold">
+                                                                        &#xE728;
+                                                                    </Run>
+                                                                    <Run />
+                                                                    <Run />
+                                                                    <Run>Add To Favorites</Run>
+                                                                </TextBlock>
+                                                            </MenuItem.Header>
+                                                        </MenuItem>
+                                                        <MenuItem x:Name="StarApp" Height="30"
+                                                                  Tag="{Binding DisplayName}"
+                                                                  Visibility="{Binding IsStar,Converter={StaticResource InvertBoolToVisibilityConverter},
+                                                        Mode=OneWay,UpdateSourceTrigger=PropertyChanged,NotifyOnSourceUpdated=True}"
+                                                                  Click="MenuItem_OnClick">
+                                                            <MenuItem.Header>
+                                                                <TextBlock VerticalAlignment="Center">
+                                                                    <Run FontFamily="Segoe MDL2 Assets" FontSize="14"
+                                                                         FontWeight="Bold">
+                                                                        &#xE735;
+                                                                    </Run>
+                                                                    <Run />
+                                                                    <Run />
+                                                                    <Run>Star this app</Run>
+                                                                </TextBlock>
+                                                            </MenuItem.Header>
+                                                        </MenuItem>
+                                                        <MenuItem x:Name="RemoveStar" Height="30"
+                                                                  Visibility="{Binding IsStar,Converter={StaticResource BoolToVisibilityConverter},
+                                                        Mode=OneWay,UpdateSourceTrigger=PropertyChanged,NotifyOnSourceUpdated=True}"
+                                                                  Tag="{Binding DisplayName}"
+                                                                  Click="MenuItem_OnClick">
+                                                            <MenuItem.Header>
+                                                                <TextBlock VerticalAlignment="Center">
+                                                                    <Run FontFamily="Segoe MDL2 Assets" FontSize="14"
+                                                                         FontWeight="Bold">
+                                                                        &#xE8D9;
+                                                                    </Run>
+                                                                    <Run />
+                                                                    <Run />
+                                                                    <Run>Un-Star this app</Run>
+                                                                </TextBlock>
+                                                            </MenuItem.Header>
+                                                        </MenuItem>
+                                                    </ContextMenu>
+
+                                                </Border.ContextMenu>
+                                                <b:Interaction.Triggers>
+                                                    <b:EventTrigger EventName="MouseLeftButtonUp">
+                                                        <b:InvokeCommandAction
+                                                            CommandParameter="{Binding DisplayName}"
+                                                            Command="{Binding RelativeSource={RelativeSource AncestorType=Window}, Path=DataContext.AppClickedCommand}" />
+                                                    </b:EventTrigger>
+                                                </b:Interaction.Triggers>
+                                                <Grid Margin="0 0 0 10">
+                                                    <Grid.RowDefinitions>
+                                                        <RowDefinition Height="*" />
+                                                        <RowDefinition Height="Auto" />
+                                                    </Grid.RowDefinitions>
+                                                    <Image Grid.Row="0" Source="{Binding IconSource}"
+                                                           HorizontalAlignment="Center" VerticalAlignment="Center"
+                                                           Height="30"
+                                                           Width="30" />
+                                                    <TextBlock Grid.Row="1" Text="{Binding DisplayName}"
+                                                               HorizontalAlignment="Center"
+                                                               VerticalAlignment="Center"
+                                                               Margin="10 0 10 0" FontSize="10" TextAlignment="Center"
+                                                               TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" />
+
+                                                    <TextBlock Text="&#xE735;" IsEnabled="True"
+                                                               Visibility="{Binding IsStar,Converter={StaticResource BoolToVisibilityConverter},
+                                                    Mode=OneWay,UpdateSourceTrigger=PropertyChanged,NotifyOnSourceUpdated=True}"
+                                                               FontFamily="Segoe MDL2 Assets" Margin="5"
+                                                               Foreground="#EA8500" />
+                                                </Grid>
+                                            </Border>
+
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </Grid>
+                        </ScrollViewer>
+
                         <StackPanel Grid.Row="2" HorizontalAlignment="Center" Orientation="Horizontal"
                                     VerticalAlignment="Center" Margin="30 0 0 0">
                             <Button BorderThickness="0 2 0 2" Background="Transparent"
@@ -168,73 +430,6 @@
                                 Edge
                             </Button>
                         </StackPanel>
-                        <ScrollViewer Grid.Row="1" Margin="0 0 0 0"
-                                      VerticalScrollBarVisibility="Hidden" HorizontalScrollBarVisibility="Disabled">
-                            <ItemsControl x:Name="AllAppsItemsControl" HorizontalAlignment="Center"
-                                          VerticalAlignment="Center"
-                                          ItemsSource="{Binding AllAppsCollection}"
-                                          xamlFlair:Animations.CombinedBinding="{Binding RelativeSource={RelativeSource AncestorType=Window}, Path=DataContext.IsShellActivated,UpdateSourceTrigger=PropertyChanged}"
-                                          xamlFlair:Animations.Primary="{xamlFlair:Animate BasedOn={StaticResource FadeIn}, Delay=200,Duration=200,Event=None}"
-                                          xamlFlair:Animations.Secondary="{xamlFlair:Animate BasedOn={StaticResource FadeOut},Event=None}">
-                                <ItemsControl.ItemsPanel>
-                                    <ItemsPanelTemplate>
-                                        <WrapPanel
-                                            Orientation="Horizontal" HorizontalAlignment="Center" />
-                                    </ItemsPanelTemplate>
-                                </ItemsControl.ItemsPanel>
-                                <ItemsControl.ItemTemplate>
-                                    <DataTemplate>
-                                        <Border Background="{StaticResource ColorWhite}" Height="70" Width="90"
-                                                CornerRadius="{StaticResource BorderCornerValue}" Margin="10"
-                                                BorderThickness="1" BorderBrush="{StaticResource ColorGridTop}"
-                                                xamlFlair:Animations.Primary="{xamlFlair:Animate BasedOn={StaticResource Shrink}, Event=PointerOver}"
-                                                xamlFlair:Animations.Secondary="{xamlFlair:Animate BasedOn={StaticResource Grow}, Event=PointerExit}"
-                                                ToolTip="{Binding ParsingName}"
-                                                Tag="{Binding RelativeSource={RelativeSource AncestorType=Window}}"
-                                                Cursor="Hand">
-                                            <Border.ContextMenu>
-                                                <ContextMenu>
-                                                    <MenuItem x:Name="Fav"  Header="Add to favorites" Height="30"
-                                                              Tag="{Binding DisplayName}"
-                                                              Click="MenuItem_OnClick" />
-                                                    <MenuItem x:Name="Star" Header="Star this app" Height="30"
-                                                              Tag="{Binding DisplayName}"
-                                                              Click="MenuItem_OnClick" />
-                                                </ContextMenu>
-                                            </Border.ContextMenu>
-                                            <b:Interaction.Triggers>
-                                                <b:EventTrigger EventName="MouseLeftButtonUp">
-                                                    <b:InvokeCommandAction
-                                                        CommandParameter="{Binding DisplayName}"
-                                                        Command="{Binding RelativeSource={RelativeSource AncestorType=Window}, Path=DataContext.AppClickedCommand}" />
-                                                </b:EventTrigger>
-                                            </b:Interaction.Triggers>
-                                            <Grid Margin="0 0 0 10">
-                                                <Grid.RowDefinitions>
-                                                    <RowDefinition Height="*" />
-                                                    <RowDefinition Height="Auto" />
-                                                </Grid.RowDefinitions>
-                                                <Image Grid.Row="0" Source="{Binding IconSource}"
-                                                       HorizontalAlignment="Center" VerticalAlignment="Center"
-                                                       Height="30"
-                                                       Width="30" />
-                                                <TextBlock Grid.Row="1" Text="{Binding DisplayName}"
-                                                           HorizontalAlignment="Center"
-                                                           VerticalAlignment="Center"
-                                                           Margin="10 0 10 0" FontSize="10" TextAlignment="Center"
-                                                           TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" />
-
-                                                <TextBlock Text="&#xE735;" IsEnabled="True"
-                                                           Visibility="{Binding IsStar,Converter={StaticResource BoolToVisibilityConverter},
-                                                    Mode=OneWay,UpdateSourceTrigger=PropertyChanged,NotifyOnSourceUpdated=True}"
-                                                           FontFamily="Segoe MDL2 Assets" Margin="5" Foreground="#EA8500" />
-                                            </Grid>
-                                        </Border>
-
-                                    </DataTemplate>
-                                </ItemsControl.ItemTemplate>
-                            </ItemsControl>
-                        </ScrollViewer>
                     </Grid>
 
                 </Border>
@@ -242,12 +437,13 @@
             </Grid>
             <Border x:Name="SectionProfile" VerticalAlignment="Top" HorizontalAlignment="Center" Margin="0 -35 0 0"
                     BorderBrush="{StaticResource ColorWhite}" BorderThickness="2 2 2 0"
-                    CornerRadius="100" Width="70" Height="70"
+                    CornerRadius="100" Width="70" Height="70" ToolTip="{Binding UserDisplayName}"
                     xamlFlair:Animations.CombinedBinding="{Binding IsShellActivated,UpdateSourceTrigger=PropertyChanged}"
                     xamlFlair:Animations.Secondary="{xamlFlair:Animate BasedOn={StaticResource FadeOutAndSlideToTop}, Delay=400,Duration=400,Event=None}"
                     xamlFlair:Animations.Primary="{xamlFlair:Animate BasedOn={StaticResource FadeInAndSlideFromTop}, Delay=400,Duration=400,Event=None}">
                 <Border.Background>
-                    <ImageBrush ImageSource="../Resources/Images/user.jpg" TileMode="Tile" Stretch="UniformToFill" />
+                    <ImageBrush ImageSource="{Binding UserImageSource, UpdateSourceTrigger=PropertyChanged}"
+                                Stretch="UniformToFill" />
                 </Border.Background>
             </Border>
             <StackPanel x:Name="GridFavItems" Orientation="Horizontal" HorizontalAlignment="Center"
@@ -272,6 +468,27 @@
                                         xamlFlair:Animations.Secondary="{xamlFlair:Animate BasedOn={StaticResource Grow}, Event=PointerExit,Duration=300}"
                                         ToolTip="{Binding ParsingName}"
                                         Margin="0 0 10 0" Cursor="Hand">
+                                    <Border.ContextMenu>
+                                        <ContextMenu>
+                                            <MenuItem x:Name="RemoveFav" Height="30"
+                                                      Visibility="{Binding IsStar,Converter={StaticResource BoolToVisibilityConverter},
+                                                        Mode=OneWay,UpdateSourceTrigger=PropertyChanged,NotifyOnSourceUpdated=True}"
+                                                      Tag="{Binding DisplayName}"
+                                                      Click="MenuItem_OnClick">
+                                                <MenuItem.Header>
+                                                    <TextBlock VerticalAlignment="Center">
+                                                        <Run FontFamily="Segoe MDL2 Assets" FontSize="14"
+                                                             FontWeight="Bold">
+                                                            &#xE734;
+                                                        </Run>
+                                                        <Run />
+                                                        <Run />
+                                                        <Run>Remove this app from favorites</Run>
+                                                    </TextBlock>
+                                                </MenuItem.Header>
+                                            </MenuItem>
+                                        </ContextMenu>
+                                    </Border.ContextMenu>
                                     <b:Interaction.Triggers>
                                         <b:EventTrigger EventName="MouseLeftButtonUp">
                                             <b:InvokeCommandAction
