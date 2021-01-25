@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Media;
 using Microsoft.Toolkit.Mvvm.Input;
 using Microsoft.Toolkit.Mvvm.Messaging;
@@ -33,6 +34,7 @@ namespace ModernStartMenu_MVVM.ViewModels
         public RelayCommand ShellActivatedCommand { get; }
         public RelayCommand ShellDeactivatedCommand { get; }
         public RelayCommand SearchBoxEnterPressedCommand { get; }
+        public AsyncRelayCommand ChangeThemeCommand { get; }
         public AsyncRelayCommand<object> AddNewUserAppCommand { get; }
         public AsyncRelayCommand<object> RemoveStarAppCommand { get; set; }
         public AsyncRelayCommand<object> RemoveFavAppCommand { get; set; }
@@ -84,9 +86,10 @@ namespace ModernStartMenu_MVVM.ViewModels
         public WeatherRoot WeatherDetails
         {
             get => _weatherDetails;
-            set => SetProperty(ref _weatherDetails,value);
+            set => SetProperty(ref _weatherDetails, value);
         }
 
+        public DateTime LastWeatherChecked { get; set; }
         public ICollectionView CollectionView { get; set; }
 
         public ShellViewModel()
@@ -105,14 +108,16 @@ namespace ModernStartMenu_MVVM.ViewModels
             RemoveStarAppCommand = new AsyncRelayCommand<object>(RemoveStarApp);
             RemoveFavAppCommand = new AsyncRelayCommand<object>(RemoveFavApp);
             SearchBoxEnterPressedCommand = new RelayCommand(SearchBoxEnterPressed);
+            ChangeThemeCommand = new AsyncRelayCommand(ChangeTheme);
             WeatherDetails = new WeatherRoot();
+            LastWeatherChecked = DateTime.MinValue;
             LoadApps();
         }
 
         private void LoadApps()
         {
             GetAndSetUser();
-            WeatherDetails =  GetWeatherDetails();
+            GetWeatherDetails();
             var allUserApps = GetAllUserApps();
             FavAppsCollection = allUserApps.AllFavAppsCollection;
             AllAppsCollection = allUserApps.allUserAppsCollection;
@@ -124,14 +129,45 @@ namespace ModernStartMenu_MVVM.ViewModels
                     AllAppsCollection.Add(userApp);
                 }
             }
-
-            //CollectionView = CollectionViewSource.GetDefaultView(AllAppsCollection);
         }
 
         //=====================================================
+        private Task ChangeTheme()
+        {
+            try
+            {
+                var styleDictionary = Application.Current.Resources.MergedDictionaries[0];
+                var lightSource = new Uri("Resources/Styles/LightTheme.xaml", UriKind.RelativeOrAbsolute);
+                var darkSource = new Uri("Resources/Styles/DarkTheme.xaml", UriKind.RelativeOrAbsolute);
+                if (styleDictionary.Source == lightSource)
+                {
+                    styleDictionary.Source = darkSource;
+                }
+                else
+                {
+                    styleDictionary.Source = lightSource;
+                }
+            }
+            catch (Exception e)
+            {
+                WeakReferenceMessenger.Default.Send(new Message(null)
+                {
+                    Caption = "Error",
+                    MessageText = e.Message
+                });
+            }
+
+            return Task.CompletedTask;
+        }
+
         private void ShellActivated()
         {
             IsShellActivated = true;
+            if ((DateTime.Now - LastWeatherChecked).Hours >= 1)
+            {
+                WeatherDetails = GetWeatherDetails();
+                LastWeatherChecked = DateTime.Now;
+            }
         }
 
         private void ShellDeactivated()
@@ -533,7 +569,14 @@ namespace ModernStartMenu_MVVM.ViewModels
         {
             try
             {
-                WeatherRoot weather = Task.Run(async ()=> await OpenWeatherDotNet.GetWeatherByZipAndCountryCodeAsync("f801526de5966ad181a597464bc900ac","66000","pk",TempUnit.Celsius)).Result;
+                WeatherRoot weather = Task.Run(async () =>
+                    await OpenWeatherDotNet.GetWeatherByZipAndCountryCodeAsync("f801526de5966ad181a597464bc900ac",
+                        "66000", "pk", TempUnit.Celsius)).Result;
+                if (weather.Weather != null)
+                {
+                    weather.DisplayIcon = @"http://openweathermap.org/img/wn/11d@4x.png";
+                    //weather.DisplayIcon = $@"http://openweathermap.org/img/wn/{weather.Weather?[0]?.Icon}@4x.png";
+                }
 
                 return weather;
             }

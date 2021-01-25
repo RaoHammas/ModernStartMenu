@@ -5,11 +5,18 @@
     <converters:BoolToVisConverter x:Key="BoolToVisibilityConverter" />
     <converters:InvertBoolToVisConverter x:Key="InvertBoolToVisibilityConverter" />
 
+    <Color x:Key="BackgroundColor">White</Color>
+    <Color x:Key="ForegroundColor">#818183</Color>
+    <Color x:Key="MiddleColor">#D8D8D8</Color>
+    <Color x:Key="TopSectionColor">WhiteSmoke</Color>
+
     <system:Double x:Key="Double500">1500</system:Double>
-    <SolidColorBrush x:Key="ColorGridTop" Color="#E7E0E0" />
-    <SolidColorBrush x:Key="ColorGridBottom" Color="#F7F7F7" />
-    <SolidColorBrush x:Key="ColorWhite" Color="#FFFFFF" />
-    <SolidColorBrush x:Key="TextColor" Color="#474747" />
+
+    <SolidColorBrush x:Key="BackgroundBrush" Color="{StaticResource BackgroundColor}" />
+    <SolidColorBrush x:Key="ForegroundBrush" Color="{StaticResource ForegroundColor}" />
+    <SolidColorBrush x:Key="MiddleBrush" Color="{StaticResource MiddleColor}" />
+    <SolidColorBrush x:Key="ToSectionBrush" Color="{StaticResource TopSectionColor}" />
+
     <DropShadowEffect x:Key="ShadowEffectDefault" Opacity="0.3" />
     <DropShadowEffect x:Key="ToolTipShadowEffectDefault" Color="Black" BlurRadius="10" Opacity="0.1" ShadowDepth="10"
                       Direction="-43" />
@@ -27,7 +34,7 @@
                     <Border>
                         <Border Name="Border" Margin="15"
                                 CornerRadius="{StaticResource BorderCornerValue}"
-                                Width="{TemplateBinding Width}" Background="{StaticResource ColorWhite}"
+                                Width="{TemplateBinding Width}" Background="{StaticResource BackgroundBrush}"
                                 Height="{TemplateBinding Height}" Padding="0"
                                 Effect="{StaticResource ToolTipShadowEffectDefault}">
                             <ContentPresenter Margin="4"
@@ -49,8 +56,8 @@
                 <ControlTemplate TargetType="{x:Type ContextMenu}">
 
                     <Border x:Name="Border" Effect="{StaticResource ShadowEffectDefault}"
-                            Background="{StaticResource ColorGridTop}" Margin="15"
-                            BorderBrush="{StaticResource ColorGridTop}"
+                            Background="{StaticResource BackgroundBrush}" Margin="15"
+                            BorderBrush="{StaticResource BackgroundBrush}"
                             BorderThickness="1" CornerRadius="{StaticResource BorderCornerValue}">
                         <StackPanel IsItemsHost="True" Orientation="Vertical"
                                     KeyboardNavigation.DirectionalNavigation="Cycle" />
@@ -59,15 +66,20 @@
             </Setter.Value>
         </Setter>
     </Style>
-
+    <Style TargetType="MenuItem">
+        <Setter Property="Foreground" Value="{StaticResource ForegroundBrush}"></Setter>
+    </Style>
     <!--Scrollbar Thumbs-->
-    <Style x:Key="ScrollThumbs" TargetType="{x:Type Thumb}">
+    <!--<Style x:Key="ScrollThumbs" TargetType="{x:Type Thumb}">
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type Thumb}">
                     <Grid x:Name="Grid">
-                        <Rectangle HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Width="Auto" Height="Auto" Fill="Transparent" />
-                        <Border x:Name="Rectangle1" CornerRadius="10" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Width="Auto" Height="Auto"  Background="{TemplateBinding Background}" />
+                        <Rectangle HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Width="Auto" Height="Auto"
+                                   Fill="Transparent" />
+                        <Border x:Name="Rectangle1" CornerRadius="10" HorizontalAlignment="Stretch"
+                                VerticalAlignment="Stretch" Width="Auto" Height="Auto"
+                                Background="{TemplateBinding Background}" />
                     </Grid>
                     <ControlTemplate.Triggers>
                         <Trigger Property="Tag" Value="Horizontal">
@@ -80,9 +92,8 @@
         </Setter>
     </Style>
 
-    <!--ScrollBars-->
     <Style TargetType="ScrollBar">
-        <Setter Property="Background" Value="White"></Setter>
-        <Setter Property="Width" Value="5"></Setter>
-    </Style>
+        <Setter Property="Background" Value="{StaticResource BackgroundBrush}" />
+        <Setter Property="Width" Value="5" />
+    </Style>-->
 </ResourceDictionary>

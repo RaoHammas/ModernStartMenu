@@ -25,12 +25,12 @@
             xamlFlair:Animations.Primary="{xamlFlair:Animate BasedOn={StaticResource FadeInAndGrow}, Duration=200,Event=None}"
             xamlFlair:Animations.Secondary="{xamlFlair:Animate BasedOn={StaticResource FadeOutAndShrink}, Delay=200,Event=None}"
             xamlFlair:Animations.CombinedBinding="{Binding IsShellActivated,UpdateSourceTrigger=PropertyChanged}"
-            CornerRadius="{StaticResource BorderCornerValue}">
+            CornerRadius="{DynamicResource BorderCornerValue}">
         <Border.Effect>
             <DropShadowEffect BlurRadius="24" Opacity="0.2" />
         </Border.Effect>
         <Border.Background>
-            <SolidColorBrush Color="White" Opacity="0.8" />
+            <SolidColorBrush Color="{DynamicResource TopSectionColor}" Opacity="0.9" />
         </Border.Background>
         <Grid>
             <Grid>
@@ -47,50 +47,51 @@
 
                         </Grid.ColumnDefinitions>
                         <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
-                            <Border Background="{StaticResource ColorWhite}"
+                            <Border Background="{DynamicResource BackgroundBrush}"
                                     ToolTip="Open windows power options dialog" Cursor="Hand"
-                                    CornerRadius="{StaticResource BorderCornerValue}" Height="30"
+                                    CornerRadius="{DynamicResource BorderCornerValue}" Height="30"
                                     xamlFlair:Animations.Primary="{xamlFlair:Animate BasedOn={StaticResource FadeInAndSlideFromLeft}, Delay=400,Duration=400,Event=None}"
                                     xamlFlair:Animations.Secondary="{xamlFlair:Animate BasedOn={StaticResource FadeOutAndSlideToLeft}, Delay=400,Duration=400,Event=None}"
                                     xamlFlair:Animations.CombinedBinding="{Binding IsShellActivated,UpdateSourceTrigger=PropertyChanged}"
-                                    Effect="{StaticResource ShadowEffectDefault}">
+                                    Effect="{DynamicResource ShadowEffectDefault}">
                                 <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Margin="5"
                                             Orientation="Horizontal">
                                     <TextBlock Text="&#xE7E8;" FontSize="16" Margin="2 0 0 0"
                                                VerticalAlignment="Center"
-                                               FontFamily="Segoe MDL2 Assets" Foreground="{StaticResource TextColor}" />
+                                               FontFamily="Segoe MDL2 Assets"
+                                               Foreground="{DynamicResource ForegroundBrush}" />
                                     <TextBlock Text="Power Off" FontSize="12" VerticalAlignment="Center"
                                                Margin="5 0 10 0"
-                                               Foreground="{StaticResource TextColor}" />
+                                               Foreground="{DynamicResource ForegroundBrush}" />
                                 </StackPanel>
                             </Border>
-                            <Border Margin="10 0 0 0" Background="{StaticResource ColorWhite}"
+                            <Border Margin="10 0 0 0" Background="{DynamicResource BackgroundBrush}"
                                     ToolTip="Check this to enable google search" Cursor="Hand"
-                                    CornerRadius="{StaticResource BorderCornerValue}" Height="30"
+                                    CornerRadius="{DynamicResource BorderCornerValue}" Height="30"
 
                                     xamlFlair:Animations.Primary="{xamlFlair:Animate BasedOn={StaticResource FadeInAndSlideFromLeft}, Delay=300,Duration=300,Event=None}"
                                     xamlFlair:Animations.Secondary="{xamlFlair:Animate BasedOn={StaticResource FadeOutAndSlideToLeft}, Delay=300,Duration=300,Event=None}"
                                     xamlFlair:Animations.CombinedBinding="{Binding IsShellActivated,UpdateSourceTrigger=PropertyChanged}"
 
-                                    Effect="{StaticResource ShadowEffectDefault}">
+                                    Effect="{DynamicResource ShadowEffectDefault}">
                                 <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Margin="5"
                                             Orientation="Horizontal">
                                     <CheckBox VerticalAlignment="Center" Margin="5 0 0 0" BorderBrush="LightGray"
-                                              Foreground="{StaticResource TextColor}"
+                                              Foreground="{DynamicResource ForegroundBrush}"
                                               IsChecked="{Binding IsShellActivated,UpdateSourceTrigger=PropertyChanged}" />
                                     <TextBlock Text="Google Search" FontSize="12" VerticalAlignment="Center"
-                                               Margin="5 0 5 1" Foreground="{StaticResource TextColor}" />
+                                               Margin="5 0 5 1" Foreground="{DynamicResource ForegroundBrush}" />
                                 </StackPanel>
                             </Border>
-                            <Border Margin="15 0 0 0" Background="{StaticResource ColorWhite}"
+                            <Border Margin="15 0 0 0" Background="{DynamicResource BackgroundBrush}"
                                     ToolTip="Add an app to start menu" Cursor="Hand"
-                                    CornerRadius="{StaticResource BorderCornerValue}" Height="30" Width="35"
+                                    CornerRadius="{DynamicResource BorderCornerValue}" Height="30" Width="35"
 
                                     xamlFlair:Animations.Primary="{xamlFlair:Animate BasedOn={StaticResource FadeInAndSlideFromLeft}, Delay=200,Duration=200,Event=None}"
                                     xamlFlair:Animations.Secondary="{xamlFlair:Animate BasedOn={StaticResource FadeOutAndSlideToLeft}, Delay=200,Duration=200,Event=None}"
                                     xamlFlair:Animations.CombinedBinding="{Binding IsShellActivated,UpdateSourceTrigger=PropertyChanged}"
 
-                                    Effect="{StaticResource ShadowEffectDefault}">
+                                    Effect="{DynamicResource ShadowEffectDefault}">
                                 <b:Interaction.Triggers>
                                     <b:EventTrigger EventName="MouseLeftButtonUp">
                                         <b:InvokeCommandAction CommandParameter="false"
@@ -99,20 +100,33 @@
                                 </b:Interaction.Triggers>
                                 <TextBlock VerticalAlignment="Center" FontSize="16" HorizontalAlignment="Center"
                                            Text="&#xE710;" FontFamily="Segoe MDL2 Assets"
-                                           Foreground="{StaticResource TextColor}" />
+                                           Foreground="{DynamicResource ForegroundBrush}" />
                             </Border>
+                            <Image Source="../Resources/Images/githubBlack.png" Margin="30 0 0 0"
+                                   ToolTip="Open github account" Opacity="0.8" Cursor="Hand"
+                                   Height="24" Width="24" />
+                            <Image Source="../Resources/Images/DarkMode.png" Margin="10 0 0 0"
+                                   ToolTip="Open github account" Opacity="0.6" Cursor="Hand"
+                                   Height="26" Width="26">
+                                <b:Interaction.Triggers>
+                                    <b:EventTrigger EventName="MouseLeftButtonUp">
+                                        <b:InvokeCommandAction
+                                            Command="{Binding ChangeThemeCommand}" />
+                                    </b:EventTrigger>
+                                </b:Interaction.Triggers>
+                            </Image>
                         </StackPanel>
                         <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center" />
                     </Grid>
                 </Border>
                 <Grid Grid.Row="1">
                     <Border x:Name="SectionSearch" HorizontalAlignment="Stretch" VerticalAlignment="Top"
-                            BorderThickness="0" CornerRadius="{StaticResource BorderCornerValue}"
-                            Background="{StaticResource ColorWhite}" Width="700" Margin="0 20 0 0" Height="45"
+                            BorderThickness="0" CornerRadius="{DynamicResource BorderCornerValue}"
+                            Background="{DynamicResource BackgroundBrush}" Width="700" Margin="0 20 0 0" Height="45"
                             xamlFlair:Animations.Primary="{xamlFlair:Animate BasedOn={StaticResource FadeInAndSlideFromTop}, Delay=300,Duration=300,Event=None}"
                             xamlFlair:Animations.Secondary="{xamlFlair:Animate BasedOn={StaticResource FadeOutAndSlideToTop}, Delay=300,Duration=300,Event=None}"
                             xamlFlair:Animations.CombinedBinding="{Binding IsShellActivated,UpdateSourceTrigger=PropertyChanged}"
-                            Effect="{StaticResource ShadowEffectDefault}">
+                            Effect="{DynamicResource ShadowEffectDefault}">
                         <Grid Margin="10 5 10 5">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition />
@@ -122,7 +136,7 @@
                                      FontWeight="Light"
                                      FontSize="24"
                                      Text="{Binding SearchText,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged,NotifyOnTargetUpdated=True,NotifyOnSourceUpdated=True,Delay=300}"
-                                     Background="Transparent" Foreground="{StaticResource TextColor}">
+                                     Background="Transparent" Foreground="{DynamicResource ForegroundBrush}">
                                 <TextBox.InputBindings>
                                     <KeyBinding Command="{Binding SearchBoxEnterPressedCommand}" Key="Return" />
                                 </TextBox.InputBindings>
@@ -133,36 +147,39 @@
                                        FontFamily="Segoe MDL2 Assets" />
                         </Grid>
                     </Border>
-                    <Grid VerticalAlignment="Top" HorizontalAlignment="Left" Margin="0 -10 0 0"
+                    <Grid x:Name="WeatherWidget" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="0 -10 0 0"
+                          Width="175"
                           xamlFlair:Animations.Primary="{xamlFlair:Animate BasedOn={StaticResource FadeInAndSlideFromLeft}, Delay=300,Duration=300,Event=None}"
                           xamlFlair:Animations.Secondary="{xamlFlair:Animate BasedOn={StaticResource FadeOutAndSlideToLeft}, Delay=300,Duration=300,Event=None}"
-                          xamlFlair:Animations.CombinedBinding="{Binding IsShellActivated,UpdateSourceTrigger=PropertyChanged}"
-                          >
+                          xamlFlair:Animations.CombinedBinding="{Binding IsShellActivated,UpdateSourceTrigger=PropertyChanged}">
                         <Grid.Effect>
-                            <DropShadowEffect Opacity="0.3"></DropShadowEffect>
+                            <DropShadowEffect Opacity="0.3" />
                         </Grid.Effect>
-                        <StackPanel Orientation="Vertical" HorizontalAlignment="Left"
-                                    VerticalAlignment="Center">
-                            <StackPanel Orientation="Horizontal">
+                        <StackPanel Orientation="Vertical" HorizontalAlignment="Right"
+                                    VerticalAlignment="Center" Margin="0">
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0">
                                 <Image x:Name="WeatherImage" Height="100"
-                                       VerticalAlignment="Center" HorizontalAlignment="Left" Margin="0 0 0 -5"
-                                       Source="{Binding WeatherDetails.DisplayIcon,UpdateSourceTrigger=PropertyChanged}" />
-                                <TextBlock x:Name="TextTemperature" VerticalAlignment="Center" Margin="-20 0 0 0"
-                                           FontSize="38" FontWeight="Bold" Foreground="{StaticResource ColorWhite}"
-                                            >
-                                    <Run Text="{Binding WeatherDetails.MainWeather.Temperature,StringFormat=N0,UpdateSourceTrigger=PropertyChanged}"></Run>
+                                       Source="{Binding WeatherDetails.DisplayIcon,UpdateSourceTrigger=PropertyChanged}"
+                                       VerticalAlignment="Center" HorizontalAlignment="Left" Margin="0 0 -15 -5" />
+                                <TextBlock x:Name="TextTemperature" VerticalAlignment="Center" Margin="0 0 0 0"
+                                           FontSize="38" FontWeight="Bold"
+                                           Foreground="{DynamicResource ForegroundBrush}">
+                                    <Run
+                                        Text="{Binding WeatherDetails.MainWeather.Temperature,StringFormat=N0,UpdateSourceTrigger=PropertyChanged}" />
                                     <Run>°C</Run>
                                 </TextBlock>
                             </StackPanel>
 
-                            <TextBlock VerticalAlignment="Center" Margin="5 -30 0 0" FontSize="24" HorizontalAlignment="Right"
-                                       Visibility="Visible" FontWeight="Bold" Foreground="{StaticResource ColorWhite}"
+                            <TextBlock VerticalAlignment="Center" Margin="5 -30 0 0" FontSize="22"
+                                       HorizontalAlignment="Right"
+                                       Visibility="Visible" FontWeight="ExtraLight"
+                                       Foreground="{DynamicResource ForegroundBrush}"
                                        Text="{Binding WeatherDetails.Weather[0].Description,UpdateSourceTrigger=PropertyChanged}" />
                         </StackPanel>
                     </Grid>
                 </Grid>
 
-                <Border x:Name="SectionMenuItems" Grid.Row="2" Background="{StaticResource ColorWhite}"
+                <Border x:Name="SectionMenuItems" Grid.Row="2" Background="{DynamicResource BackgroundBrush}"
                         CornerRadius="0 0 5 5">
                     <Grid>
                         <Grid.RowDefinitions>
@@ -171,7 +188,7 @@
                             <RowDefinition Height="50" />
                         </Grid.RowDefinitions>
                         <ScrollViewer Grid.Row="1" Margin="0 0 0 0"
-                                      VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                                      VerticalScrollBarVisibility="Hidden" HorizontalScrollBarVisibility="Disabled">
                             <Grid>
                                 <ItemsControl x:Name="AllAppsItemsControl" HorizontalAlignment="Center"
                                               VerticalAlignment="Center"
@@ -188,9 +205,10 @@
                                     </ItemsControl.ItemsPanel>
                                     <ItemsControl.ItemTemplate>
                                         <DataTemplate>
-                                            <Border Background="{StaticResource ColorWhite}" Height="70" Width="90"
-                                                    CornerRadius="{StaticResource BorderCornerValue}" Margin="10"
-                                                    BorderThickness="1" BorderBrush="{StaticResource ColorGridTop}"
+                                            <Border Background="{DynamicResource BackgroundBrush}" Height="70"
+                                                    Width="90"
+                                                    CornerRadius="{DynamicResource BorderCornerValue}" Margin="10"
+                                                    BorderThickness="1" BorderBrush="{DynamicResource MiddleBrush}"
                                                     xamlFlair:Animations.Primary="{xamlFlair:Animate BasedOn={StaticResource Shrink}, Event=PointerOver}"
                                                     xamlFlair:Animations.Secondary="{xamlFlair:Animate BasedOn={StaticResource Grow}, Event=PointerExit}"
                                                     ToolTip="{Binding ParsingName}"
@@ -271,6 +289,7 @@
                                                     <TextBlock Grid.Row="1" Text="{Binding DisplayName}"
                                                                HorizontalAlignment="Center"
                                                                VerticalAlignment="Center"
+                                                               Foreground="{DynamicResource ForegroundBrush}"
                                                                Margin="10 0 10 0" FontSize="10" TextAlignment="Center"
                                                                TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" />
 
@@ -300,9 +319,10 @@
                                     </ItemsControl.ItemsPanel>
                                     <ItemsControl.ItemTemplate>
                                         <DataTemplate>
-                                            <Border Background="{StaticResource ColorWhite}" Height="70" Width="90"
-                                                    CornerRadius="{StaticResource BorderCornerValue}" Margin="10"
-                                                    BorderThickness="1" BorderBrush="{StaticResource ColorGridTop}"
+                                            <Border Background="{DynamicResource BackgroundBrush}" Height="70"
+                                                    Width="90"
+                                                    CornerRadius="{DynamicResource BorderCornerValue}" Margin="10"
+                                                    BorderThickness="1" BorderBrush="{DynamicResource MiddleBrush}"
                                                     xamlFlair:Animations.Primary="{xamlFlair:Animate BasedOn={StaticResource Shrink}, Event=PointerOver}"
                                                     xamlFlair:Animations.Secondary="{xamlFlair:Animate BasedOn={StaticResource Grow}, Event=PointerExit}"
                                                     ToolTip="{Binding ParsingName}"
@@ -312,8 +332,7 @@
                                                     <ContextMenu>
                                                         <MenuItem x:Name="FavApp" Height="30"
                                                                   Tag="{Binding DisplayName}"
-                                                                  Visibility="{Binding IsFav,Converter={StaticResource InvertBoolToVisibilityConverter},
-                                                        Mode=OneWay,UpdateSourceTrigger=PropertyChanged,NotifyOnSourceUpdated=True}"
+                                                                  Visibility="{Binding IsFav,Converter={StaticResource InvertBoolToVisibilityConverter}}"
                                                                   Click="MenuItem_OnClick">
                                                             <MenuItem.Header>
                                                                 <TextBlock VerticalAlignment="Center">
@@ -383,6 +402,7 @@
                                                     <TextBlock Grid.Row="1" Text="{Binding DisplayName}"
                                                                HorizontalAlignment="Center"
                                                                VerticalAlignment="Center"
+                                                               Foreground="{DynamicResource ForegroundBrush}"
                                                                Margin="10 0 10 0" FontSize="10" TextAlignment="Center"
                                                                TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" />
 
@@ -401,30 +421,33 @@
                         </ScrollViewer>
 
                         <StackPanel Grid.Row="2" HorizontalAlignment="Center" Orientation="Horizontal"
-                                    VerticalAlignment="Center" Margin="30 0 0 0">
-                            <Button BorderThickness="0 2 0 2" Background="Transparent"
-                                    BorderBrush="{StaticResource ColorGridTop}" Width="110" Height="30">
+                                    VerticalAlignment="Center" Margin="0 0 0 0">
+                            <Button BorderThickness="0 1 0 1" Background="Transparent"
+                                    Foreground="{DynamicResource ForegroundBrush}"
+                                    BorderBrush="{DynamicResource ForegroundBrush}" Width="110" Height="30">
                                 <Button.Resources>
                                     <Style TargetType="Border">
-                                        <Setter Property="CornerRadius" Value="{StaticResource BorderCornerValue}" />
+                                        <Setter Property="CornerRadius" Value="{DynamicResource BorderCornerValue}" />
                                     </Style>
                                 </Button.Resources>
                                 Your Applications
                             </Button>
-                            <Button BorderThickness="0 2 0 2" Background="Transparent"
-                                    BorderBrush="{StaticResource ColorGridTop}" Width="110" Height="30">
+                            <Button BorderThickness="0 1 0 1" Background="Transparent"
+                                    Foreground="{DynamicResource ForegroundBrush}"
+                                    BorderBrush="{DynamicResource ForegroundBrush}" Width="110" Height="30">
                                 <Button.Resources>
                                     <Style TargetType="Border">
-                                        <Setter Property="CornerRadius" Value="{StaticResource BorderCornerValue}" />
+                                        <Setter Property="CornerRadius" Value="{DynamicResource BorderCornerValue}" />
                                     </Style>
                                 </Button.Resources>
                                 Quick Notes
                             </Button>
-                            <Button BorderThickness="0 2 0 2" Background="Transparent"
-                                    BorderBrush="{StaticResource ColorGridTop}" Width="110" Height="30">
+                            <Button BorderThickness="0 1 0 1" Background="Transparent"
+                                    Foreground="{DynamicResource ForegroundBrush}"
+                                    BorderBrush="{DynamicResource ForegroundBrush}" Width="110" Height="30">
                                 <Button.Resources>
                                     <Style TargetType="Border">
-                                        <Setter Property="CornerRadius" Value="{StaticResource BorderCornerValue}" />
+                                        <Setter Property="CornerRadius" Value="{DynamicResource BorderCornerValue}" />
                                     </Style>
                                 </Button.Resources>
                                 Edge
@@ -436,7 +459,7 @@
 
             </Grid>
             <Border x:Name="SectionProfile" VerticalAlignment="Top" HorizontalAlignment="Center" Margin="0 -35 0 0"
-                    BorderBrush="{StaticResource ColorWhite}" BorderThickness="2 2 2 0"
+                    BorderBrush="{DynamicResource BackgroundBrush}" BorderThickness="2 2 2 0"
                     CornerRadius="100" Width="70" Height="70" ToolTip="{Binding UserDisplayName}"
                     xamlFlair:Animations.CombinedBinding="{Binding IsShellActivated,UpdateSourceTrigger=PropertyChanged}"
                     xamlFlair:Animations.Secondary="{xamlFlair:Animate BasedOn={StaticResource FadeOutAndSlideToTop}, Delay=400,Duration=400,Event=None}"
@@ -448,7 +471,7 @@
             </Border>
             <StackPanel x:Name="GridFavItems" Orientation="Horizontal" HorizontalAlignment="Center"
                         VerticalAlignment="Center" Margin="0 -170 0 0"
-                        Effect="{StaticResource ShadowEffectDefault}">
+                        Effect="{DynamicResource ShadowEffectDefault}">
                 <ItemsControl x:Name="FavItemsControl" ItemsSource="{Binding FavAppsCollection}">
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
@@ -458,12 +481,13 @@
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
                             <Grid
-                                xamlFlair:Animations.CombinedBinding="{Binding RelativeSource={RelativeSource AncestorType=Window}, Path=DataContext.IsShellActivated,UpdateSourceTrigger=PropertyChanged}"
+                                xamlFlair:Animations.CombinedBinding="{Binding RelativeSource={RelativeSource AncestorType=Window}, 
+                                Path=DataContext.IsShellActivated,UpdateSourceTrigger=PropertyChanged}"
                                 xamlFlair:Animations.Primary="{xamlFlair:Animate BasedOn={StaticResource FadeInAndSlideFromLeft}, 
                                 Delay=300,Duration=300,Event=None}"
                                 xamlFlair:Animations.Secondary="{xamlFlair:Animate BasedOn={StaticResource FadeOutAndSlideToLeft},Event=None}">
-                                <Border Background="{StaticResource ColorWhite}" Height="70" Width="90"
-                                        CornerRadius="{StaticResource BorderCornerValue}"
+                                <Border Background="{DynamicResource BackgroundBrush}" Height="70" Width="90"
+                                        CornerRadius="{DynamicResource BorderCornerValue}"
                                         xamlFlair:Animations.Primary="{xamlFlair:Animate BasedOn={StaticResource Shrink}, Event=PointerOver,Duration=300}"
                                         xamlFlair:Animations.Secondary="{xamlFlair:Animate BasedOn={StaticResource Grow}, Event=PointerExit,Duration=300}"
                                         ToolTip="{Binding ParsingName}"
@@ -471,7 +495,7 @@
                                     <Border.ContextMenu>
                                         <ContextMenu>
                                             <MenuItem x:Name="RemoveFav" Height="30"
-                                                      Visibility="{Binding IsStar,Converter={StaticResource BoolToVisibilityConverter},
+                                                      Visibility="{Binding IsFav,Converter={StaticResource BoolToVisibilityConverter},
                                                         Mode=OneWay,UpdateSourceTrigger=PropertyChanged,NotifyOnSourceUpdated=True}"
                                                       Tag="{Binding DisplayName}"
                                                       Click="MenuItem_OnClick">
@@ -483,7 +507,7 @@
                                                         </Run>
                                                         <Run />
                                                         <Run />
-                                                        <Run>Remove this app from favorites</Run>
+                                                        <Run>Remove from favorites</Run>
                                                     </TextBlock>
                                                 </MenuItem.Header>
                                             </MenuItem>
@@ -507,7 +531,8 @@
                                         <TextBlock Grid.Row="1" Text="{Binding DisplayName}"
                                                    HorizontalAlignment="Center"
                                                    VerticalAlignment="Center"
-                                                   Margin="10 0 10 0" FontSize="8" TextAlignment="Center"
+                                                   Foreground="{DynamicResource ForegroundBrush}"
+                                                   Margin="10 0 10 0" FontSize="10" TextAlignment="Center"
                                                    TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" />
                                     </Grid>
                                 </Border>
@@ -520,8 +545,8 @@
                     xamlFlair:Animations.CombinedBinding="{Binding IsShellActivated,UpdateSourceTrigger=PropertyChanged}"
                     xamlFlair:Animations.Primary="{xamlFlair:Animate BasedOn={StaticResource FadeInAndSlideFromLeft}, Delay=400,Duration=400,Event=None}"
                     xamlFlair:Animations.Secondary="{xamlFlair:Animate BasedOn={StaticResource FadeOutAndSlideToLeft}, Delay=400,Duration=400,Event=None}">
-                    <Border x:Name="BorderBtnAddNewFavApp" Background="{StaticResource ColorWhite}" Cursor="Hand"
-                            Height="70" Width="90" CornerRadius="{StaticResource BorderCornerValue}"
+                    <Border x:Name="BorderBtnAddNewFavApp" Background="{DynamicResource BackgroundBrush}" Cursor="Hand"
+                            Height="70" Width="90" CornerRadius="{DynamicResource BorderCornerValue}"
                             xamlFlair:Animations.Primary="{xamlFlair:Animate BasedOn={StaticResource Shrink}, Event=PointerOver,Duration=300}"
                             xamlFlair:Animations.Secondary="{xamlFlair:Animate BasedOn={StaticResource Grow}, Event=PointerExit,Duration=300}">
 
@@ -533,7 +558,7 @@
                         </b:Interaction.Triggers>
                         <TextBlock VerticalAlignment="Center" FontSize="24" HorizontalAlignment="Center"
                                    Text="&#xE710;" FontFamily="Segoe MDL2 Assets"
-                                   Foreground="{StaticResource TextColor}" />
+                                   Foreground="{DynamicResource ForegroundBrush}" />
                     </Border>
                 </Grid>
             </StackPanel>

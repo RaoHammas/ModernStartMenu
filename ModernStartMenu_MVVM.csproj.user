@@ -14,7 +14,10 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Page Update="Resources\Styles\ModernStartMenuStyles.xaml">
+    <Page Update="Resources\Styles\DarkTheme.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Resources\Styles\LightTheme.xaml">
       <SubType>Designer</SubType>
     </Page>
     <Page Update="Views\ShellView.xaml">

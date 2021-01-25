@@ -6,6 +6,9 @@ namespace ModernStartMenu_MVVM.Models
 {
     public class StartMenuApp : ObservableObject
     {
+        private bool _isStar;
+        private bool _isFav;
+
         public StartMenuApp()
         {
             DisplayName = "";
@@ -17,9 +20,12 @@ namespace ModernStartMenu_MVVM.Models
         }
 
         public string DisplayName { get; set; }
-        public bool IsFav { get; set; }
 
-        private bool _isStar;
+        public bool IsFav
+        {
+            get => _isFav;
+            set => SetProperty(ref _isFav, value);
+        }
 
         public bool IsStar
         {

@@ -4,7 +4,7 @@
     <Application.Resources>
          <ResourceDictionary>
              <ResourceDictionary.MergedDictionaries>
-                 <ResourceDictionary Source="Resources/Styles/ModernStartMenuStyles.xaml"></ResourceDictionary>
+                 <ResourceDictionary Source="Resources/Styles/LightTheme.xaml"></ResourceDictionary>
                  <ResourceDictionary Source="pack://application:,,,/XamlFlair.WPF;component/DefaultAnimations.xaml"/>
             </ResourceDictionary.MergedDictionaries>
          </ResourceDictionary>
