@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -28,7 +27,13 @@ namespace ModernStartMenu_MVVM.ViewModels
         private bool _isSearchActive;
         private ObservableCollection<StartMenuApp> _searchCollection;
         private WeatherRoot _weatherDetails;
+        private bool _isBrowserVisible;
+        private string _browserSourceAddress;
+        private AppSettings _appSettingsFile;
+
+
         public RelayCommand<object> AppClickedCommand { get; }
+        public RelayCommand IsGoogleSearchActiveCommand { get; }
         public AsyncRelayCommand<object> AddAppToFavListCommand { get; }
         public AsyncRelayCommand<object> StarTheAppCommand { get; }
         public RelayCommand ShellActivatedCommand { get; }
@@ -74,7 +79,6 @@ namespace ModernStartMenu_MVVM.ViewModels
             get => _searchText;
             set
             {
-                //Task.Delay(new TimeSpan(0,0,0,10)).ContinueWith(task => task.IsCompletedSuccessfully);
                 SetProperty(ref _searchText, value);
                 SearchApp();
             }
@@ -90,12 +94,31 @@ namespace ModernStartMenu_MVVM.ViewModels
         }
 
         public DateTime LastWeatherChecked { get; set; }
-        public ICollectionView CollectionView { get; set; }
+
+        public bool IsBrowserVisible
+        {
+            get => _isBrowserVisible;
+            set => SetProperty(ref _isBrowserVisible, value);
+        }
+
+        public string BrowserSourceAddress
+        {
+            get => _browserSourceAddress;
+            set => SetProperty(ref _browserSourceAddress, value);
+        }
+
+        public AppSettings AppSettingsFile
+        {
+            get => _appSettingsFile;
+            set => SetProperty(ref _appSettingsFile, value);
+        }
+
 
         public ShellViewModel()
         {
             IsShellActivated = false;
             IsSearchActive = false;
+            IsBrowserVisible = false;
             SearchCollection = new ObservableCollection<StartMenuApp>();
             AddAppToFavListCommand = new AsyncRelayCommand<object>(AddAppToFavList);
             AllAppsCollection = new ObservableCollection<StartMenuApp>();
@@ -108,9 +131,12 @@ namespace ModernStartMenu_MVVM.ViewModels
             RemoveStarAppCommand = new AsyncRelayCommand<object>(RemoveStarApp);
             RemoveFavAppCommand = new AsyncRelayCommand<object>(RemoveFavApp);
             SearchBoxEnterPressedCommand = new RelayCommand(SearchBoxEnterPressed);
+            IsGoogleSearchActiveCommand = new RelayCommand(IsGoogleSearchActiveCommandExecute);
             ChangeThemeCommand = new AsyncRelayCommand(ChangeTheme);
             WeatherDetails = new WeatherRoot();
             LastWeatherChecked = DateTime.MinValue;
+
+            GetAppSettings();
             LoadApps();
         }
 
@@ -132,20 +158,38 @@ namespace ModernStartMenu_MVVM.ViewModels
         }
 
         //=====================================================
+        private void IsGoogleSearchActiveCommandExecute()
+        {
+            AppSettingsFile.IsGoogleSearchActive = !AppSettingsFile.IsGoogleSearchActive;
+            SaveAppSettings();
+        }
+
         private Task ChangeTheme()
+        {
+            AppSettingsFile.ThemeCode = AppSettingsFile.ThemeCode == "Dark" ? "Light" : "Dark";
+
+            ActivateTheme();
+            SaveAppSettings();
+            return Task.CompletedTask;
+        }
+
+        private void ActivateTheme()
         {
             try
             {
                 var styleDictionary = Application.Current.Resources.MergedDictionaries[0];
                 var lightSource = new Uri("Resources/Styles/LightTheme.xaml", UriKind.RelativeOrAbsolute);
                 var darkSource = new Uri("Resources/Styles/DarkTheme.xaml", UriKind.RelativeOrAbsolute);
-                if (styleDictionary.Source == lightSource)
+
+                if (AppSettingsFile.ThemeCode == "Dark")
                 {
                     styleDictionary.Source = darkSource;
+                    AppSettingsFile.ThemeCode = "Dark";
                 }
                 else
                 {
                     styleDictionary.Source = lightSource;
+                    AppSettingsFile.ThemeCode = "Light";
                 }
             }
             catch (Exception e)
@@ -156,8 +200,6 @@ namespace ModernStartMenu_MVVM.ViewModels
                     MessageText = e.Message
                 });
             }
-
-            return Task.CompletedTask;
         }
 
         private void ShellActivated()
@@ -179,8 +221,7 @@ namespace ModernStartMenu_MVVM.ViewModels
         {
             try
             {
-                // execute first app 
-
+                //execute first app if enter btn pressed in search box
                 StartMenuApp firstApp;
                 if (_isSearchActive)
                 {
@@ -213,23 +254,24 @@ namespace ModernStartMenu_MVVM.ViewModels
         {
             try
             {
-                /*CollectionView.Filter  = delegate(object o)
-                {
-                    var app = (StartMenuApp) o;
-                    return app != null && app.DisplayName.ToLower().Contains(SearchText.Trim().ToLower());
-                };*/
-
                 if (!string.IsNullOrEmpty(SearchText))
                 {
                     IsSearchActive = true;
                     var results =
                         AllAppsCollection.Where(x => x.DisplayName.ToLower().Contains(SearchText.Trim().ToLower()));
                     SearchCollection = new ObservableCollection<StartMenuApp>(results);
+
+                    if (SearchCollection.Count < 1 && AppSettingsFile.IsGoogleSearchActive)
+                    {
+                        IsBrowserVisible = true;
+                        BrowserSourceAddress = "https://www.google.com/search?q=" + SearchText;
+                    }
                 }
                 else
                 {
                     IsSearchActive = false;
                     SearchCollection.Clear();
+                    IsBrowserVisible = false;
                 }
             }
             catch (Exception e)
@@ -574,8 +616,8 @@ namespace ModernStartMenu_MVVM.ViewModels
                         "66000", "pk", TempUnit.Celsius)).Result;
                 if (weather.Weather != null)
                 {
-                    weather.DisplayIcon = @"http://openweathermap.org/img/wn/11d@4x.png";
-                    //weather.DisplayIcon = $@"http://openweathermap.org/img/wn/{weather.Weather?[0]?.Icon}@4x.png";
+                    //weather.DisplayIcon = @"http://openweathermap.org/img/wn/11d@4x.png";
+                    weather.DisplayIcon = $@"http://openweathermap.org/img/wn/{weather.Weather?[0]?.Icon}@4x.png";
                 }
 
                 return weather;
@@ -590,6 +632,41 @@ namespace ModernStartMenu_MVVM.ViewModels
             }
 
             return null;
+        }
+
+        private async void SaveAppSettings()
+        {
+            try
+            {
+                await using var stream = File.Create("AppSettings.json");
+                await JsonSerializer.SerializeAsync(stream, AppSettingsFile);
+            }
+            catch (Exception e)
+            {
+                WeakReferenceMessenger.Default.Send(new Message(null)
+                {
+                    Caption = "Error",
+                    MessageText = e.Message
+                });
+            }
+        }
+
+        private void GetAppSettings()
+        {
+            try
+            {
+                var reader = File.ReadAllText("AppSettings.json");
+                AppSettingsFile = JsonSerializer.Deserialize<AppSettings>(reader);
+                ActivateTheme();
+            }
+            catch (Exception e)
+            {
+                AppSettingsFile = new AppSettings
+                {
+                    ThemeCode = "Light",
+                    IsGoogleSearchActive = true
+                };
+            }
         }
     } // end of class
 }

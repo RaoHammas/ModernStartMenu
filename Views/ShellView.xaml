@@ -6,6 +6,7 @@
         xmlns:xamlFlair="clr-namespace:XamlFlair;assembly=XamlFlair.WPF"
         xmlns:viewModels="clr-namespace:ModernStartMenu_MVVM.ViewModels"
         xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
+        xmlns:wpf="clr-namespace:Microsoft.Web.WebView2.Wpf;assembly=Microsoft.Web.WebView2.Wpf"
         x:Name="Shell"
         mc:Ignorable="d" WindowStartupLocation="CenterScreen" ShowInTaskbar="True"
         AllowsTransparency="True" WindowStyle="None" Background="Transparent" ResizeMode="NoResize"
@@ -65,7 +66,8 @@
                                                Foreground="{DynamicResource ForegroundBrush}" />
                                 </StackPanel>
                             </Border>
-                            <Border Margin="10 0 0 0" Background="{DynamicResource BackgroundBrush}"
+                            <Border x:Name="BorderGoogleSearch" Margin="10 0 0 0"
+                                    Background="{DynamicResource BackgroundBrush}"
                                     ToolTip="Check this to enable google search" Cursor="Hand"
                                     CornerRadius="{DynamicResource BorderCornerValue}" Height="30"
 
@@ -76,9 +78,18 @@
                                     Effect="{DynamicResource ShadowEffectDefault}">
                                 <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Margin="5"
                                             Orientation="Horizontal">
-                                    <CheckBox VerticalAlignment="Center" Margin="5 0 0 0" BorderBrush="LightGray"
+                                    <CheckBox x:Name="CheckBoxGoogleSearch" VerticalAlignment="Center" Margin="5 0 0 0"
+                                              BorderBrush="{DynamicResource ForegroundBrush}"
                                               Foreground="{DynamicResource ForegroundBrush}"
-                                              IsChecked="{Binding IsShellActivated,UpdateSourceTrigger=PropertyChanged}" />
+                                              Background="{DynamicResource ToSectionBrush}"
+                                              IsChecked="{Binding AppSettingsFile.IsGoogleSearchActive,
+                                        UpdateSourceTrigger=PropertyChanged,Mode=TwoWay,NotifyOnSourceUpdated=True,NotifyOnTargetUpdated=True}">
+                                        <b:Interaction.Triggers>
+                                            <b:EventTrigger EventName="MouseLeftButtonUp">
+                                                <b:InvokeCommandAction Command="{Binding IsGoogleSearchActiveCommand}" />
+                                            </b:EventTrigger>
+                                        </b:Interaction.Triggers>
+                                    </CheckBox>
                                     <TextBlock Text="Google Search" FontSize="12" VerticalAlignment="Center"
                                                Margin="5 0 5 1" Foreground="{DynamicResource ForegroundBrush}" />
                                 </StackPanel>
@@ -106,7 +117,7 @@
                                    ToolTip="Open github account" Opacity="0.8" Cursor="Hand"
                                    Height="24" Width="24" />
                             <Image Source="../Resources/Images/DarkMode.png" Margin="10 0 0 0"
-                                   ToolTip="Open github account" Opacity="0.6" Cursor="Hand"
+                                   ToolTip="Change Theme" Opacity="0.6" Cursor="Hand"
                                    Height="26" Width="26">
                                 <b:Interaction.Triggers>
                                     <b:EventTrigger EventName="MouseLeftButtonUp">
@@ -417,6 +428,14 @@
                                         </DataTemplate>
                                     </ItemsControl.ItemTemplate>
                                 </ItemsControl>
+                                <Grid x:Name="BorderBrowser"
+                                      Visibility="{Binding IsBrowserVisible,UpdateSourceTrigger=PropertyChanged,Converter={StaticResource BoolToVisibilityConverter}}">
+
+                                    <wpf:WebView2 x:Name="SearchWebBrowser" ZoomFactor="0.7"
+                                                  CoreWebView2InitializationCompleted="SearchWebBrowser_OnCoreWebView2InitializationCompleted"
+                                                  Source="{Binding BrowserSourceAddress,
+                                        UpdateSourceTrigger=PropertyChanged,Mode=TwoWay,NotifyOnSourceUpdated=True,NotifyOnTargetUpdated=True}" />
+                                </Grid>
                             </Grid>
                         </ScrollViewer>
 

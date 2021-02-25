@@ -2,6 +2,7 @@
 using System.Windows;
 using System.Windows.Controls;
 using Microsoft.Toolkit.Mvvm.Messaging;
+using Microsoft.Web.WebView2.Core;
 using Microsoft.Win32;
 using ModernStartMenu_MVVM.Models;
 using ModernStartMenu_MVVM.ViewModels;
@@ -16,15 +17,20 @@ namespace ModernStartMenu_MVVM.Views
         public ShellView()
         {
             WeakReferenceMessenger.Default.Register<Message>(this, (r, m) => { ShowMessageDialog(m); });
-
             WeakReferenceMessenger.Default.Register<FilePickerMessage>(this, (r, m) =>
             {
                 var path = ShowFilePicker();
                 m.Reply(path);
             });
-
+            
             InitializeComponent();
             BoxSearch.Focus();
+
+            SearchWebBrowser.CoreWebView2InitializationCompleted +=
+                SearchWebBrowser_OnCoreWebView2InitializationCompleted;
+
+            SearchWebBrowser.EnsureCoreWebView2Async();
+            
         }
 
         private void ShowMessageDialog(Message message)
@@ -66,19 +72,37 @@ namespace ModernStartMenu_MVVM.Views
                 if (menu.Name == "FavApp")
                 {
                     ctx.AddAppToFavListCommand.Execute(((MenuItem) sender).Tag.ToString());
-                }             
+                }
                 else if (menu.Name == "RemoveFav")
                 {
                     ctx.RemoveFavAppCommand.Execute(((MenuItem) sender).Tag.ToString());
                 }
                 else if (menu.Name == "RemoveStar")
                 {
-                    ctx.RemoveStarAppCommand.Execute(((MenuItem)sender).Tag.ToString());
+                    ctx.RemoveStarAppCommand.Execute(((MenuItem) sender).Tag.ToString());
                 }
-                else if(menu.Name == "StarApp")
+                else if (menu.Name == "StarApp")
                 {
                     ctx.StarTheAppCommand.Execute(((MenuItem) sender).Tag.ToString());
                 }
+            }
+        }
+
+        private void SearchWebBrowser_OnCoreWebView2InitializationCompleted(object sender,
+            CoreWebView2InitializationCompletedEventArgs e)
+        {
+            if (!e.IsSuccess)
+            {
+                CheckBoxGoogleSearch.IsEnabled = false;
+                BorderGoogleSearch.ToolTip =
+                    "Google search not available because you need to install WebWiew2 runtime. Please Install this runtime and check again.";
+                MessageBox.Show(
+                    "Google search not available because you need to install 'WebWiew2 runtime'.\nPlease Install this runtime and check again.\n Press Alt+Space to activate Modern Start Menu.");
+            }
+            else
+            {
+                SearchWebBrowser.CoreWebView2.Settings.AreDevToolsEnabled = false;
+                SearchWebBrowser.CoreWebView2.Settings.IsStatusBarEnabled = false;
             }
         }
     } // end of class

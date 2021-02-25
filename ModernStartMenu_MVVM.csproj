@@ -16,10 +16,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.Toolkit.Mvvm" Version="7.0.0-preview4" />
+    <PackageReference Include="Microsoft.Toolkit.Mvvm" Version="7.0.0-preview5" />
+    <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.790-prerelease" />
     <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.31" />
     <PackageReference Include="System.Reactive" Version="5.0.0" />
-    <PackageReference Include="XamlFlair.WPF" Version="1.2.4" />
+    <PackageReference Include="XamlFlair.WPF" Version="1.2.7" />
     <PackageReference Include="WinCopies.WindowsAPICodePack.Shell" Version="3.0.0-preview" />
   </ItemGroup>
 
@@ -45,7 +46,7 @@
     <ProjectReference Include="..\..\OpenWeatherMapDotNet\OpenWeatherMapDotNet\OpenWeatherMapDotNet.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
+	<ItemGroup>
     <Page Update="Resources\Styles\DarkTheme.xaml">
       <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
       <SubType>Designer</SubType>
