@@ -126,6 +126,16 @@
                                     </b:EventTrigger>
                                 </b:Interaction.Triggers>
                             </Image>
+                            <Image Source="../Resources/Images/settingsIcon.png" Margin="10 0 0 0"
+                                   ToolTip="Change Settings" Opacity="0.6" Cursor="Hand"
+                                   Height="26" Width="26">
+                                <b:Interaction.Triggers>
+                                    <b:EventTrigger EventName="MouseLeftButtonUp">
+                                        <b:InvokeCommandAction
+                                            Command="{Binding OpenCloseSettingsCommand}" />
+                                    </b:EventTrigger>
+                                </b:Interaction.Triggers>
+                            </Image>
                         </StackPanel>
                         <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center" />
                     </Grid>
@@ -159,7 +169,7 @@
                         </Grid>
                     </Border>
                     <Grid x:Name="WeatherWidget" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="0 -10 0 0"
-                          Width="175"
+                          Width="175" ToolTip="Weather information"
                           xamlFlair:Animations.Primary="{xamlFlair:Animate BasedOn={StaticResource FadeInAndSlideFromLeft}, Delay=300,Duration=300,Event=None}"
                           xamlFlair:Animations.Secondary="{xamlFlair:Animate BasedOn={StaticResource FadeOutAndSlideToLeft}, Delay=300,Duration=300,Event=None}"
                           xamlFlair:Animations.CombinedBinding="{Binding IsShellActivated,UpdateSourceTrigger=PropertyChanged}">
@@ -171,17 +181,18 @@
                             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0">
                                 <Image x:Name="WeatherImage" Height="100"
                                        Source="{Binding WeatherDetails.DisplayIcon,UpdateSourceTrigger=PropertyChanged}"
-                                       VerticalAlignment="Center" HorizontalAlignment="Left" Margin="0 0 -15 -5" />
-                                <TextBlock x:Name="TextTemperature" VerticalAlignment="Center" Margin="0 0 0 0"
+                                       VerticalAlignment="Center" HorizontalAlignment="Left" Margin="0 0 -10 -5" />
+                                <TextBlock x:Name="TextTemperature" VerticalAlignment="Center" Margin="0 0 -10 0"
                                            FontSize="38" FontWeight="Bold"
                                            Foreground="{DynamicResource ForegroundBrush}">
                                     <Run
                                         Text="{Binding WeatherDetails.MainWeather.Temperature,StringFormat=N0,UpdateSourceTrigger=PropertyChanged}" />
-                                    <Run>°C</Run>
+                                    <Run Text="{Binding AppSettingsFile.TempUnit,StringFormat={}°{0},
+                                        Converter={StaticResource TemperatureUnitConverter},UpdateSourceTrigger=PropertyChanged}"></Run>
                                 </TextBlock>
                             </StackPanel>
 
-                            <TextBlock VerticalAlignment="Center" Margin="5 -30 0 0" FontSize="22"
+                            <TextBlock VerticalAlignment="Center" Margin="5 -25 0 0" FontSize="22"
                                        HorizontalAlignment="Right"
                                        Visibility="Visible" FontWeight="ExtraLight"
                                        Foreground="{DynamicResource ForegroundBrush}"
@@ -196,7 +207,7 @@
                         <Grid.RowDefinitions>
                             <RowDefinition Height="50" />
                             <RowDefinition Height="*" />
-                            <RowDefinition Height="50" />
+                            <RowDefinition Height="Auto" />
                         </Grid.RowDefinitions>
                         <ScrollViewer Grid.Row="1" Margin="0 0 0 0"
                                       VerticalScrollBarVisibility="Hidden" HorizontalScrollBarVisibility="Disabled">
@@ -431,15 +442,90 @@
                                 <Grid x:Name="BorderBrowser"
                                       Visibility="{Binding IsBrowserVisible,UpdateSourceTrigger=PropertyChanged,Converter={StaticResource BoolToVisibilityConverter}}">
 
-                                    <wpf:WebView2 x:Name="SearchWebBrowser" ZoomFactor="0.7"
+                                    <wpf:WebView2 x:Name="SearchWebBrowser" ZoomFactor="0.7" 
                                                   CoreWebView2InitializationCompleted="SearchWebBrowser_OnCoreWebView2InitializationCompleted"
                                                   Source="{Binding BrowserSourceAddress,
                                         UpdateSourceTrigger=PropertyChanged,Mode=TwoWay,NotifyOnSourceUpdated=True,NotifyOnTargetUpdated=True}" />
                                 </Grid>
+                                <Grid x:Name="GridSettings" 
+                                      Visibility="{Binding IsSettingsVisible,UpdateSourceTrigger=PropertyChanged,Converter={StaticResource BoolToVisibilityConverter}}"
+                                      Background="{DynamicResource BackgroundBrush}">
+
+                                    <Grid Margin="40 20 40 20">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto"></ColumnDefinition>
+                                            <ColumnDefinition Width="Auto"></ColumnDefinition>
+                                            <ColumnDefinition></ColumnDefinition>
+                                        </Grid.ColumnDefinitions>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto"></RowDefinition>
+                                            <RowDefinition Height="10"></RowDefinition>
+                                            <RowDefinition Height="Auto"></RowDefinition>
+                                            <RowDefinition Height="Auto"></RowDefinition>
+                                            <RowDefinition Height="Auto"></RowDefinition>
+                                            <RowDefinition Height="Auto"></RowDefinition>
+                                            <RowDefinition Height="Auto"></RowDefinition>
+                                            <RowDefinition Height="Auto"></RowDefinition>
+                                            <RowDefinition Height="Auto"></RowDefinition>
+                                            <RowDefinition Height="Auto"></RowDefinition>
+                                            <RowDefinition Height="Auto"></RowDefinition>
+                                            <RowDefinition Height="Auto"></RowDefinition>
+                                        </Grid.RowDefinitions>
+                                        <TextBlock Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" 
+                                                   Foreground="{DynamicResource ForegroundBrush}" FontSize="25" 
+                                                   TextDecorations="UnderLine">Settings</TextBlock>
+                                        <TextBlock Grid.Row="2" Grid.Column="0" FontSize="18" Foreground="{DynamicResource ForegroundBrush}" Margin="0 10 0 0">Weather Settings</TextBlock>
+                                        <TextBlock Grid.Row="3" Grid.Column="0" Foreground="{DynamicResource ForegroundBrush}" Margin="0 10 0 0">Api Key</TextBlock>
+                                        <TextBox Grid.Row="3" Grid.Column="0" Width="120" 
+                                                 ToolTip="Get your free weather api key from https://openweathermap.org/"
+                                                 Text="{Binding AppSettingsFile.ApiKey,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged,NotifyOnTargetUpdated=True,NotifyOnSourceUpdated=True}"
+                                                 HorizontalAlignment="Left" Background="{DynamicResource BackgroundBrush}" 
+                                                 BorderBrush="{DynamicResource ForegroundBrush}" Margin="80 5 0 0"></TextBox>
+                                        <TextBlock Grid.Row="4" Grid.Column="0" Foreground="{DynamicResource ForegroundBrush}" Margin="0 10 0 0">Zip Code</TextBlock>
+                                        <TextBox Grid.Row="4" Grid.Column="0"  Width="120" 
+                                                 ToolTip="Zip code of your city e.g 66000"
+                                                 Text="{Binding AppSettingsFile.ZipCode,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged,NotifyOnTargetUpdated=True,NotifyOnSourceUpdated=True}"
+                                                 Background="{DynamicResource BackgroundBrush}" 
+                                                 BorderBrush="{DynamicResource ForegroundBrush}" 
+                                                 HorizontalAlignment="Left" Margin="80 5 0 0"></TextBox>
+                                        <TextBlock Grid.Row="5" Grid.Column="0" Foreground="{DynamicResource ForegroundBrush}" Margin="0 10 0 0">Country Code</TextBlock>
+                                        <TextBox Grid.Row="5" Grid.Column="0" Width="120" 
+                                                 ToolTip="Country code e.g pk"
+                                                 Text="{Binding AppSettingsFile.CountryCode,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged,NotifyOnTargetUpdated=True,NotifyOnSourceUpdated=True}"
+                                                 HorizontalAlignment="Left" Background="{DynamicResource BackgroundBrush}" 
+                                                 BorderBrush="{DynamicResource ForegroundBrush}" Margin="80 5 0 0"></TextBox>
+                                        <TextBlock Grid.Row="6" Grid.Column="0" Foreground="{DynamicResource ForegroundBrush}" Margin="0 10 0 0">Temp Unit</TextBlock>
+                                        <ComboBox Grid.Row="6" Grid.Column="0"  Width="120" 
+                                                  BorderBrush="{DynamicResource ForegroundBrush}" Background="{DynamicResource BackgroundBrush}"
+                                                  Text="{Binding AppSettingsFile.TempUnit,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged,NotifyOnTargetUpdated=True,NotifyOnSourceUpdated=True}"
+                                                  HorizontalAlignment="Left" Margin="80 5 0 0">
+                                            <ComboBoxItem IsSelected="True">Celsius</ComboBoxItem>
+                                            <ComboBoxItem>fahrenheit</ComboBoxItem>
+                                            <ComboBoxItem>Kelvin</ComboBoxItem>
+                                        </ComboBox>
+
+                                        <Button x:Name="BtnSaveSettings" Grid.Row="10" Grid.Column="0" Margin="0 10 0 0" Width="120" HorizontalAlignment="Right" Height="28" 
+                                                Background="{DynamicResource ForegroundBrush}" 
+                                                Command="{Binding SaveSettingsCommand}"
+                                                Foreground="{DynamicResource BackgroundBrush}">Save Settings</Button>
+                                        <Button x:Name="BtnCloseSettings" Grid.Row="10" Grid.Column="1" Margin="2 10 0 0" Width="60" HorizontalAlignment="Left" Height="28" 
+                                                Background="IndianRed" BorderBrush="IndianRed" Command="{Binding OpenCloseSettingsCommand}"
+                                                Foreground="{DynamicResource BackgroundBrush}">
+                                            Close
+                                        </Button>
+                                        <TextBlock Grid.Row="0" Grid.RowSpan="11" Grid.Column="2" Foreground="{DynamicResource MiddleBrush}"
+                                                   Text="&#xE713;" FontFamily="Segoe MDL2 Assets" FontSize="50" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                        <TextBlock Grid.Column="2" Grid.Row="0" Grid.RowSpan="11" Foreground="{DynamicResource MiddleBrush}"
+                                                   HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="30" Margin="0 90 0 0">
+                                            More features are coming soon :)
+                                        </TextBlock>
+                                    </Grid >
+                                </Grid>
                             </Grid>
                         </ScrollViewer>
 
-                        <StackPanel Grid.Row="2" HorizontalAlignment="Center" Orientation="Horizontal"
+                        <StackPanel Grid.Row="2" HorizontalAlignment="Center" Orientation="Horizontal" Height="50"
+                                    Visibility="{Binding IsBrowserVisible,Converter={StaticResource InvertBoolToVisibilityConverter}}"
                                     VerticalAlignment="Center" Margin="0 0 0 0">
                             <Button BorderThickness="0 1 0 1" Background="Transparent"
                                     Foreground="{DynamicResource ForegroundBrush}"
@@ -469,7 +555,7 @@
                                         <Setter Property="CornerRadius" Value="{DynamicResource BorderCornerValue}" />
                                     </Style>
                                 </Button.Resources>
-                                Edge
+                                Browser
                             </Button>
                         </StackPanel>
                     </Grid>

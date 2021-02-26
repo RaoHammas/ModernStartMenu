@@ -5,6 +5,7 @@
          <ResourceDictionary>
              <ResourceDictionary.MergedDictionaries>
                  <ResourceDictionary Source="Resources/Styles/LightTheme.xaml"></ResourceDictionary>
+                 <ResourceDictionary Source="Resources/Styles/StartMenuCommonStyles.xaml"></ResourceDictionary>
                  <ResourceDictionary Source="pack://application:,,,/XamlFlair.WPF;component/DefaultAnimations.xaml"/>
             </ResourceDictionary.MergedDictionaries>
          </ResourceDictionary>

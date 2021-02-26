@@ -11,6 +11,7 @@ using Microsoft.Toolkit.Mvvm.Input;
 using Microsoft.Toolkit.Mvvm.Messaging;
 using Microsoft.WindowsAPICodePack.COMNative.Shell;
 using Microsoft.WindowsAPICodePack.Shell;
+using Microsoft.WindowsAPICodePack.Win32Native.Shell;
 using ModernStartMenu_MVVM.Models;
 using OpenWeatherMapDotNet;
 using static OpenWeatherMapDotNet.OpenWeather;
@@ -30,6 +31,7 @@ namespace ModernStartMenu_MVVM.ViewModels
         private bool _isBrowserVisible;
         private string _browserSourceAddress;
         private AppSettings _appSettingsFile;
+        private bool _isSettingsVisible;
 
 
         public RelayCommand<object> AppClickedCommand { get; }
@@ -40,9 +42,17 @@ namespace ModernStartMenu_MVVM.ViewModels
         public RelayCommand ShellDeactivatedCommand { get; }
         public RelayCommand SearchBoxEnterPressedCommand { get; }
         public AsyncRelayCommand ChangeThemeCommand { get; }
+        public RelayCommand SaveSettingsCommand { get; }
+        public RelayCommand OpenCloseSettingsCommand { get; }
         public AsyncRelayCommand<object> AddNewUserAppCommand { get; }
         public AsyncRelayCommand<object> RemoveStarAppCommand { get; set; }
         public AsyncRelayCommand<object> RemoveFavAppCommand { get; set; }
+
+        public bool IsSettingsVisible
+        {
+            get => _isSettingsVisible;
+            set => SetProperty(ref _isSettingsVisible, value);
+        }
 
         public bool IsShellActivated
         {
@@ -119,6 +129,7 @@ namespace ModernStartMenu_MVVM.ViewModels
             IsShellActivated = false;
             IsSearchActive = false;
             IsBrowserVisible = false;
+            IsSettingsVisible = false;
             SearchCollection = new ObservableCollection<StartMenuApp>();
             AddAppToFavListCommand = new AsyncRelayCommand<object>(AddAppToFavList);
             AllAppsCollection = new ObservableCollection<StartMenuApp>();
@@ -133,17 +144,35 @@ namespace ModernStartMenu_MVVM.ViewModels
             SearchBoxEnterPressedCommand = new RelayCommand(SearchBoxEnterPressed);
             IsGoogleSearchActiveCommand = new RelayCommand(IsGoogleSearchActiveCommandExecute);
             ChangeThemeCommand = new AsyncRelayCommand(ChangeTheme);
+            SaveSettingsCommand = new RelayCommand(SaveAllAppSettingsCommandExecute);
+            OpenCloseSettingsCommand = new RelayCommand(CloseAppSettings);
             WeatherDetails = new WeatherRoot();
             LastWeatherChecked = DateTime.MinValue;
 
             GetAppSettings();
             LoadApps();
+
+            ListenToShellAppsChanges();
+        }
+
+        private void SaveAllAppSettingsCommandExecute()
+        {
+            SaveAppSettings();
+            WeatherDetails = GetWeatherDetails();
+
+            WeakReferenceMessenger.Default.Send(new Message(null)
+            {
+                Caption = "Success",
+                MessageText = "Settings Saved Successfully !"
+            });
         }
 
         private void LoadApps()
         {
+            FavAppsCollection.Clear();
+            AllAppsCollection.Clear();
+
             GetAndSetUser();
-            GetWeatherDetails();
             var allUserApps = GetAllUserApps();
             FavAppsCollection = allUserApps.AllFavAppsCollection;
             AllAppsCollection = allUserApps.allUserAppsCollection;
@@ -158,6 +187,11 @@ namespace ModernStartMenu_MVVM.ViewModels
         }
 
         //=====================================================
+        private void CloseAppSettings()
+        {
+            IsSettingsVisible = !IsSettingsVisible;
+        }
+
         private void IsGoogleSearchActiveCommandExecute()
         {
             AppSettingsFile.IsGoogleSearchActive = !AppSettingsFile.IsGoogleSearchActive;
@@ -205,7 +239,8 @@ namespace ModernStartMenu_MVVM.ViewModels
         private void ShellActivated()
         {
             IsShellActivated = true;
-            if ((DateTime.Now - LastWeatherChecked).Hours >= 1)
+            var diff = DateTime.Now - LastWeatherChecked;
+            if (diff.TotalHours >= 1)
             {
                 WeatherDetails = GetWeatherDetails();
                 LastWeatherChecked = DateTime.Now;
@@ -550,7 +585,6 @@ namespace ModernStartMenu_MVVM.ViewModels
             var folderIdAppsFolder = new Guid("{1e87508d-89c2-42f0-8a7e-645a0f50ca58}");
             var appsFolder = KnownFolderHelper.FromKnownFolderId(folderIdAppsFolder);
             var apps = new ObservableCollection<StartMenuApp>();
-
             foreach (var app in appsFolder)
             {
                 var menuApp = new StartMenuApp
@@ -611,9 +645,23 @@ namespace ModernStartMenu_MVVM.ViewModels
         {
             try
             {
+                TempUnit unit = AppSettingsFile.TempUnit switch
+                {
+                    "Fahrenheit" => TempUnit.Fahrenheit,
+                    "Kelvin" => TempUnit.Kelvin,
+                    _ => TempUnit.Celsius
+                };
+
+                AppSettingsFile.ZipCode ??= "66000";
+                AppSettingsFile.CountryCode ??= "pk";
+                if (AppSettingsFile.ApiKey == null)
+                {
+                    return null;
+                }
+
                 WeatherRoot weather = Task.Run(async () =>
-                    await OpenWeatherDotNet.GetWeatherByZipAndCountryCodeAsync("f801526de5966ad181a597464bc900ac",
-                        "66000", "pk", TempUnit.Celsius)).Result;
+                    await OpenWeatherDotNet.GetWeatherByZipAndCountryCodeAsync(AppSettingsFile.ApiKey.Trim(),
+                        AppSettingsFile.ZipCode, AppSettingsFile.CountryCode.ToLower(), unit)).Result;
                 if (weather.Weather != null)
                 {
                     //weather.DisplayIcon = @"http://openweathermap.org/img/wn/11d@4x.png";
@@ -666,6 +714,26 @@ namespace ModernStartMenu_MVVM.ViewModels
                     ThemeCode = "Light",
                     IsGoogleSearchActive = true
                 };
+            }
+        }
+
+        private void ListenToShellAppsChanges()
+        {
+            // GUID taken from https://docs.microsoft.com/en-us/windows/win32/shell/knownfolderid
+            var folderIdAppsFolder = new Guid("{1e87508d-89c2-42f0-8a7e-645a0f50ca58}");
+            var appsFolder = KnownFolderHelper.FromKnownFolderId(folderIdAppsFolder);
+
+            ShellObjectWatcher objectWatcher = new ShellObjectWatcher((ShellObject) appsFolder, false);
+            objectWatcher.AllEvents += ObjectWatcherOnAllEvents;
+            objectWatcher.Start();
+        }
+
+        private void ObjectWatcherOnAllEvents(object sender, ShellObjectNotificationEventArgs e)
+        {
+            if (e.ChangeType == ShellObjectChangeTypes.ItemCreate
+                || e.ChangeType == ShellObjectChangeTypes.ItemDelete)
+            {
+                LoadApps();
             }
         }
     } // end of class

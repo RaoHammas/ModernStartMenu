@@ -20,6 +20,9 @@
     <Page Update="Resources\Styles\LightTheme.xaml">
       <SubType>Designer</SubType>
     </Page>
+    <Page Update="Resources\Styles\StartMenuCommonStyles.xaml">
+      <SubType>Designer</SubType>
+    </Page>
     <Page Update="Views\ShellView.xaml">
       <SubType>Designer</SubType>
     </Page>
