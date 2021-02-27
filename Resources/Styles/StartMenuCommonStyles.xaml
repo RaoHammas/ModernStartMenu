@@ -23,10 +23,10 @@
                 <ControlTemplate TargetType="ToolTip">
                     <Border>
                         <Border Name="Border" Margin="15"
-                                CornerRadius="{StaticResource BorderCornerValue}"
-                                Width="{TemplateBinding Width}" Background="{StaticResource BackgroundBrush}"
+                                CornerRadius="{DynamicResource BorderCornerValue}"
+                                Width="{TemplateBinding Width}" Background="{DynamicResource BackgroundBrush}"
                                 Height="{TemplateBinding Height}" Padding="0"
-                                Effect="{StaticResource ToolTipShadowEffectDefault}">
+                                Effect="{DynamicResource ToolTipShadowEffectDefault}">
                             <ContentPresenter Margin="4"
                                               HorizontalAlignment="Left"
                                               VerticalAlignment="Top" />
@@ -45,10 +45,10 @@
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type ContextMenu}">
 
-                    <Border x:Name="Border" Effect="{StaticResource ShadowEffectDefault}"
-                            Background="{StaticResource BackgroundBrush}" Margin="15"
-                            BorderBrush="{StaticResource BackgroundBrush}"
-                            BorderThickness="1" CornerRadius="{StaticResource BorderCornerValue}">
+                    <Border x:Name="Border" Effect="{DynamicResource ShadowEffectDefault}"
+                            Background="{DynamicResource BackgroundBrush}" Margin="15"
+                            BorderBrush="{DynamicResource BackgroundBrush}"
+                            BorderThickness="1" CornerRadius="{DynamicResource BorderCornerValue}">
                         <StackPanel IsItemsHost="True" Orientation="Vertical"
                                     KeyboardNavigation.DirectionalNavigation="Cycle" />
                     </Border>
@@ -57,7 +57,7 @@
         </Setter>
     </Style>
     <Style TargetType="MenuItem">
-        <Setter Property="Foreground" Value="{StaticResource ForegroundBrush}" />
+        <Setter Property="Foreground" Value="{DynamicResource ForegroundBrush}" />
     </Style>
     <!--Scrollbar Thumbs-->
     <!--<Style x:Key="ScrollThumbs" TargetType="{x:Type Thumb}">

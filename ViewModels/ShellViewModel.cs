@@ -21,19 +21,24 @@ namespace ModernStartMenu_MVVM.ViewModels
 {
     public class ShellViewModel : ViewModelBase
     {
+        #region =============PROPERTIES AND COMMANDS====================================
+
         private bool _isShellActivated;
         private ObservableCollection<StartMenuApp> _favAppsCollection;
         private ObservableCollection<StartMenuApp> _allAppsCollection;
+        private ObservableCollection<StartMenuApp> _searchCollection;
+
         private string _searchText;
         private bool _isSearchActive;
-        private ObservableCollection<StartMenuApp> _searchCollection;
         private WeatherRoot _weatherDetails;
         private bool _isBrowserVisible;
         private string _browserSourceAddress;
         private AppSettings _appSettingsFile;
         private bool _isSettingsVisible;
+        private bool _isQuickNotesVisible;
+        private ObservableCollection<QuickNote> _quickNotesCollection;
 
-
+        public RelayCommand<object> CopyQuickNoteCommand { get; set; }
         public RelayCommand<object> AppClickedCommand { get; }
         public RelayCommand IsGoogleSearchActiveCommand { get; }
         public AsyncRelayCommand<object> AddAppToFavListCommand { get; }
@@ -43,10 +48,19 @@ namespace ModernStartMenu_MVVM.ViewModels
         public RelayCommand SearchBoxEnterPressedCommand { get; }
         public AsyncRelayCommand ChangeThemeCommand { get; }
         public RelayCommand SaveSettingsCommand { get; }
+        public RelayCommand<object> ChangeViewCommand { get; }
+        public RelayCommand<object> DeleteQuickNoteCommand { get; }
+        public RelayCommand<object> StartSearchCommand { get; }
         public RelayCommand OpenCloseSettingsCommand { get; }
         public AsyncRelayCommand<object> AddNewUserAppCommand { get; }
         public AsyncRelayCommand<object> RemoveStarAppCommand { get; set; }
         public AsyncRelayCommand<object> RemoveFavAppCommand { get; set; }
+
+        public bool IsQuickNotesVisible
+        {
+            get => _isQuickNotesVisible;
+            set => SetProperty(ref _isQuickNotesVisible, value);
+        }
 
         public bool IsSettingsVisible
         {
@@ -123,6 +137,15 @@ namespace ModernStartMenu_MVVM.ViewModels
             set => SetProperty(ref _appSettingsFile, value);
         }
 
+        public ObservableCollection<QuickNote> QuickNotesCollection
+        {
+            get => _quickNotesCollection;
+            set => SetProperty(ref _quickNotesCollection, value);
+        }
+
+        #endregion
+
+        #region =============METHODS=========================================
 
         public ShellViewModel()
         {
@@ -130,29 +153,87 @@ namespace ModernStartMenu_MVVM.ViewModels
             IsSearchActive = false;
             IsBrowserVisible = false;
             IsSettingsVisible = false;
-            SearchCollection = new ObservableCollection<StartMenuApp>();
-            AddAppToFavListCommand = new AsyncRelayCommand<object>(AddAppToFavList);
+            IsQuickNotesVisible = false;
             AllAppsCollection = new ObservableCollection<StartMenuApp>();
             FavAppsCollection = new ObservableCollection<StartMenuApp>();
-            ShellActivatedCommand = new RelayCommand(ShellActivated);
-            ShellDeactivatedCommand = new RelayCommand(ShellDeactivated);
-            AddNewUserAppCommand = new AsyncRelayCommand<object>(AddNewUserApp);
-            AppClickedCommand = new RelayCommand<object>(AppClicked);
-            StarTheAppCommand = new AsyncRelayCommand<object>(StarTheApp);
-            RemoveStarAppCommand = new AsyncRelayCommand<object>(RemoveStarApp);
-            RemoveFavAppCommand = new AsyncRelayCommand<object>(RemoveFavApp);
-            SearchBoxEnterPressedCommand = new RelayCommand(SearchBoxEnterPressed);
-            IsGoogleSearchActiveCommand = new RelayCommand(IsGoogleSearchActiveCommandExecute);
-            ChangeThemeCommand = new AsyncRelayCommand(ChangeTheme);
-            SaveSettingsCommand = new RelayCommand(SaveAllAppSettingsCommandExecute);
-            OpenCloseSettingsCommand = new RelayCommand(CloseAppSettings);
+            SearchCollection = new ObservableCollection<StartMenuApp>();
+            QuickNotesCollection = new ObservableCollection<QuickNote>();
+
             WeatherDetails = new WeatherRoot();
             LastWeatherChecked = DateTime.MinValue;
 
+            AddAppToFavListCommand = new AsyncRelayCommand<object>(AddAppToFavListCommandExecute);
+            ShellActivatedCommand = new RelayCommand(ShellActivatedCommandExecute);
+            ShellDeactivatedCommand = new RelayCommand(ShellDeactivatedCommandExecute);
+            AddNewUserAppCommand = new AsyncRelayCommand<object>(AddNewUserAppCommandExecute);
+            AppClickedCommand = new RelayCommand<object>(AppClickedCommandExecute);
+            ChangeViewCommand = new RelayCommand<object>(ChangeViewCommandExecute);
+            StarTheAppCommand = new AsyncRelayCommand<object>(StarTheAppCommandExecute);
+            RemoveStarAppCommand = new AsyncRelayCommand<object>(RemoveStarAppCommandExecute);
+            RemoveFavAppCommand = new AsyncRelayCommand<object>(RemoveFavAppCommandExecute);
+            SearchBoxEnterPressedCommand = new RelayCommand(SearchBoxEnterPressedCommandExecute);
+            IsGoogleSearchActiveCommand = new RelayCommand(IsGoogleSearchActiveCommandExecute);
+            ChangeThemeCommand = new AsyncRelayCommand(ChangeThemeCommandExecute);
+            SaveSettingsCommand = new RelayCommand(SaveAllAppSettingsCommandExecute);
+            OpenCloseSettingsCommand = new RelayCommand(CloseAppSettingsCommandExecute);
+            DeleteQuickNoteCommand = new RelayCommand<object>(DeleteQuickNoteCommandExecute);
+            CopyQuickNoteCommand = new RelayCommand<object>(CopyQuickNoteCommandExecute);
+            StartSearchCommand = new RelayCommand<object>(StartSearchCommandExecute);
+
+
             GetAppSettings();
             LoadApps();
-
             ListenToShellAppsChanges();
+        }
+
+        private void StartSearchCommandExecute(object searchText)
+        {
+            IsBrowserVisible = true;
+            if (searchText != null)
+            {
+                BrowserSourceAddress = searchText.ToString();
+            }
+        }
+
+        private void CopyQuickNoteCommandExecute(object noteId)
+        {
+            if (noteId == null) return;
+            var id = Convert.ToInt32(noteId);
+            var foundNote = QuickNotesCollection.FirstOrDefault(x => x.NoteId == id);
+            if (foundNote != null) Clipboard.SetText(foundNote.NoteText);
+        }
+
+
+        private void DeleteQuickNoteCommandExecute(object noteId)
+        {
+            if (noteId == null) return;
+            var id = Convert.ToInt32(noteId);
+            var foundNote = QuickNotesCollection.FirstOrDefault(x => x.NoteId == id);
+            if (foundNote != null)
+            {
+                QuickNotesCollection.Remove(foundNote);
+            }
+        }
+
+        private void ChangeViewCommandExecute(object senderBtnName)
+        {
+            if (senderBtnName == null) return;
+            switch (senderBtnName)
+            {
+                case "BrowserView":
+                    IsBrowserVisible = true;
+                    IsQuickNotesVisible = false;
+                    break;
+                case "QuickNotesView":
+                    IsBrowserVisible = false;
+                    IsQuickNotesVisible = true;
+                    break;
+                default:
+                    IsSettingsVisible = false;
+                    IsBrowserVisible = false;
+                    IsQuickNotesVisible = false;
+                    break;
+            }
         }
 
         private void SaveAllAppSettingsCommandExecute()
@@ -187,7 +268,7 @@ namespace ModernStartMenu_MVVM.ViewModels
         }
 
         //=====================================================
-        private void CloseAppSettings()
+        private void CloseAppSettingsCommandExecute()
         {
             IsSettingsVisible = !IsSettingsVisible;
         }
@@ -198,7 +279,7 @@ namespace ModernStartMenu_MVVM.ViewModels
             SaveAppSettings();
         }
 
-        private Task ChangeTheme()
+        private Task ChangeThemeCommandExecute()
         {
             AppSettingsFile.ThemeCode = AppSettingsFile.ThemeCode == "Dark" ? "Light" : "Dark";
 
@@ -236,7 +317,7 @@ namespace ModernStartMenu_MVVM.ViewModels
             }
         }
 
-        private void ShellActivated()
+        private void ShellActivatedCommandExecute()
         {
             IsShellActivated = true;
             var diff = DateTime.Now - LastWeatherChecked;
@@ -247,12 +328,12 @@ namespace ModernStartMenu_MVVM.ViewModels
             }
         }
 
-        private void ShellDeactivated()
+        private void ShellDeactivatedCommandExecute()
         {
             IsShellActivated = false;
         }
 
-        private void SearchBoxEnterPressed()
+        private void SearchBoxEnterPressedCommandExecute()
         {
             try
             {
@@ -320,7 +401,7 @@ namespace ModernStartMenu_MVVM.ViewModels
         }
 
 
-        private async Task RemoveFavApp(object sender)
+        private async Task RemoveFavAppCommandExecute(object sender)
         {
             try
             {
@@ -344,7 +425,7 @@ namespace ModernStartMenu_MVVM.ViewModels
         }
 
 
-        private async Task RemoveStarApp(object sender)
+        private async Task RemoveStarAppCommandExecute(object sender)
         {
             try
             {
@@ -370,7 +451,7 @@ namespace ModernStartMenu_MVVM.ViewModels
             }
         }
 
-        private async Task StarTheApp(object sender)
+        private async Task StarTheAppCommandExecute(object sender)
         {
             try
             {
@@ -396,7 +477,7 @@ namespace ModernStartMenu_MVVM.ViewModels
             }
         }
 
-        private async Task AddAppToFavList(object sender)
+        private async Task AddAppToFavListCommandExecute(object sender)
         {
             try
             {
@@ -441,7 +522,7 @@ namespace ModernStartMenu_MVVM.ViewModels
             }
         }
 
-        private void AppClicked(object sender)
+        private void AppClickedCommandExecute(object sender)
         {
             try
             {
@@ -471,10 +552,19 @@ namespace ModernStartMenu_MVVM.ViewModels
             }
         }
 
-        private async Task AddNewUserApp(object isFav)
+        private async Task AddNewUserAppCommandExecute(object isFav)
         {
             try
             {
+                if (IsQuickNotesVisible)
+                {
+                    QuickNotesCollection.Insert(0, new QuickNote
+                    {
+                        NoteId = QuickNotesCollection.Count + 1, NoteText = "", UpdatedDate = DateTime.Now
+                    });
+                    return;
+                }
+
                 if (Convert.ToBoolean(isFav) && FavAppsCollection.Count == 8)
                 {
                     WeakReferenceMessenger.Default.Send(new Message(null)
@@ -736,5 +826,7 @@ namespace ModernStartMenu_MVVM.ViewModels
                 LoadApps();
             }
         }
+
+        #endregion
     } // end of class
 }
