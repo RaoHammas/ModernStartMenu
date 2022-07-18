@@ -1,5 +1,5 @@
 #  ModernStartMenu v1.0
-**NOTE | Currently Re-Coding everything from scratch to use MVVM approach**  
+**NOTE | Currently Re-Coding everything from scratch**  
 
 This is version `v1.0` The very first release of 100% working super fast Modern Start Menu. To use this, you just need to start the `exe` by double clicking it and then any time from anywhere press `Alt+Space` and boom start menu will appear on top of everything <3  
 
