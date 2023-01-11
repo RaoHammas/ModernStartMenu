@@ -4,6 +4,8 @@ This is version `v1.0` The very first release of 100% working super fast Modern 
 
 #### Download v.1.0  [ModernStartMenu](https://github.com/RaoHammas/ModernStartMenu/releases/tag/v1.0)
 
+ **Hi there! I'm currently looking for a job. I've 5 years of experience working on commercial products including ERP and Medical device projects. Please contact me if you have some oppertunity. raohammasofficial@gmail.com**
+
 ## Features  
 
 *  `Alt+Space` to activate from anywhere and anytime  
